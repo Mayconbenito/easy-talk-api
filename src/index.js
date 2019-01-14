@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 
+app.use(express.json());
+
 const main = async () => {
   const mysql = require("mysql2/promise");
   const connection = await mysql.createConnection({
