@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-require("dotenv").config();
 
 const generateHash = (key, data) =>
   new Promise(resolve => {
