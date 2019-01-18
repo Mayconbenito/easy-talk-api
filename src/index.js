@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 require("dotenv").config();
 
 app.use(express.json());
@@ -14,12 +16,18 @@ const main = async () => {
   });
 
   const router = require("./router")(connection);
-  const authenticatedRouter = require("./authenticatedRouter")(connection);
   app.use("/", router);
-  app.use("/app", authenticatedRouter);
+
+  io.on("connection", socket => {
+    const authenticatedRouter = require("./authenticatedRouter")(
+      connection,
+      socket
+    );
+    app.use("/app", authenticatedRouter);
+  });
 };
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log("Server running");
   main();
 });
