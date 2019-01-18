@@ -12,7 +12,7 @@ module.exports = mysql => {
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
       const [login] = await mysql.execute(
-        "SELECT id FROM user WHERE email = ? AND password = ?",
+        "SELECT id FROM users WHERE email = ? AND password = ?",
         [email, passwordHash]
       );
 
