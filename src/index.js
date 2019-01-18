@@ -14,7 +14,9 @@ const main = async () => {
   });
 
   const router = require("./router")(connection);
+  const authenticatedRouter = require("./authenticatedRouter")(connection);
   app.use("/", router);
+  app.use("/app", authenticatedRouter);
 };
 
 app.listen(3000, () => {
