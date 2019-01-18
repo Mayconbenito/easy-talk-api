@@ -50,8 +50,8 @@ module.exports = mysql => {
       const passwordHash = await generateHash(process.env.APP_KEY, password);
 
       const [registerUser] = await mysql.execute(
-        "INSERT INTO users (username, email, password) VALUES (?,?,?)",
-        [username, email, passwordHash]
+        "INSERT INTO users (username, email, password, created_at) VALUES (?,?,?,?)",
+        [username, email, passwordHash, new Date()]
       );
 
       const jwtToken = await jwt.sign(
