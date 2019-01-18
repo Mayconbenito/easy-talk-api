@@ -38,7 +38,7 @@ module.exports = mysql => {
       const { username, email, password } = req.body;
 
       const [verifyUser] = await mysql.execute(
-        "SELECT id FROM user WHERE email = ?",
+        "SELECT id FROM users WHERE email = ?",
         [email]
       );
 
@@ -50,7 +50,7 @@ module.exports = mysql => {
       const passwordHash = await generateHash(process.env.APP_KEY, password);
 
       const [registerUser] = await mysql.execute(
-        "INSERT INTO user (username, email, password) VALUES (?,?,?)",
+        "INSERT INTO users (username, email, password) VALUES (?,?,?)",
         [username, email, passwordHash]
       );
 
