@@ -18,13 +18,8 @@ const main = async () => {
   const router = require("./router")(connection);
   app.use("/", router);
 
-  io.on("connection", socket => {
-    const authenticatedRouter = require("./authenticatedRouter")(
-      connection,
-      socket
-    );
-    app.use("/app", authenticatedRouter);
-  });
+  const authenticatedRouter = require("./authenticatedRouter")(connection, io);
+  app.use("/app", authenticatedRouter);
 };
 
 server.listen(3000, () => {
