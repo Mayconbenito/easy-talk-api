@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 require("dotenv").config();
 
+const authMiddleware = require("./middlewares/auth");
+
+router.use(authMiddleware);
+
 module.exports = mysql => {
   router.get("/peoples/:searchText/:page", async (req, res) => {
     try {
