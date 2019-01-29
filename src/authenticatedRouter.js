@@ -14,7 +14,7 @@ module.exports = mysql => {
       const limit = numberItems * page - numberItems;
 
       const [users] = await mysql.query(
-        `SELECT id, username, picture FROM users WHERE email = ? OR username LIKE ? LIMIT ${limit},${numberItems}`,
+        `SELECT SQL_CALC_FOUND_ROWS id, username, picture FROM users WHERE email = ? OR username LIKE ? LIMIT ${limit},${numberItems}`,
         [searchText, `%${searchText}%`]
       );
 
@@ -25,7 +25,7 @@ module.exports = mysql => {
           metadata: {
             totalItems: totalItems[0].count,
             items: users.length,
-            pages: Math.ceil(page / totalItems[0].count)
+            pages: Math.ceil(totalItems[0].count / numberItems)
           },
           users: users
         });
