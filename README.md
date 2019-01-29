@@ -22,26 +22,6 @@ Install Editorconfig, prettier and eslint
 }
 ```
 
-### dotenv enviroment
-
-```sh
-# .dotenv
-# SERVER
-SERVER_PORT =
-
-# MYSQL
-MYSQL_HOST = 
-MYSQL_PORT =
-MYSQL_USER =
-MYSQL_PASSWORD =
-MYSQL_DATABASE =
-
-#JWT 
-JWT_HASH =
-
-APP_KEY =
-```
-
 ### Running the project
 
 ```
