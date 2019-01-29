@@ -69,5 +69,43 @@ module.exports = mysql => {
     }
   });
 
+  router.post("/contacts", async (req, res) => {
+    try {
+      const { id } = req.body;
+
+      const [verifyUser] = await mysql.query(
+        "SELECT id FROM users WHERE id = ?",
+        [id]
+      );
+
+      if (!verifyUser.length > 0) {
+        res.status(200).json({ code: "USER_NOT_FOUND" });
+        return;
+      }
+
+      const [verifyFriend] = await mysql.query(
+        "SELECT * FROM friends WHERE user_a = ? AND user_b = ?",
+        [req.userId, id]
+      );
+
+      if (verifyFriend.length > 0) {
+        res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
+        return;
+      }
+
+      const [addUser] = await mysql.query(
+        "INSERT INTO friends (user_a, user_b, date_time) VALUES (?,?,?)",
+        [req.userId, id, new Date()]
+      );
+
+      if (addUser.affectedRows === 1) {
+        res.status(200).json({ code: "CONTACT_ADDED" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    }
+  });
+
   return router;
 };
