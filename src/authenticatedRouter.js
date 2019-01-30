@@ -6,7 +6,7 @@ const authMiddleware = require("./middlewares/auth");
 
 router.use(authMiddleware);
 
-module.exports = mysql => {
+module.exports = (mysql, io) => {
   router.get("/peoples/:searchText/:page", async (req, res) => {
     try {
       const { searchText, page } = req.params;
@@ -101,6 +101,44 @@ module.exports = mysql => {
       if (addUser.affectedRows === 1) {
         res.status(200).json({ code: "CONTACT_ADDED" });
       }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    }
+  });
+
+  router.post("/message/:toId", async (req, res) => {
+    try {
+      const { message } = req.body;
+      const { toId } = req.params;
+
+      const [session] = await mysql.query(
+        "SELECT * FROM sessions WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+        [toId]
+      );
+
+      if (session[0].status === 1) {
+        const [fromUser] = await mysql.query(
+          "SELECT * FROM users WHERE id = ?",
+          [req.userId]
+        );
+
+        io.to(session[0].websocket_id).emit("message", {
+          from: {
+            id: fromUser[0].id,
+            username: fromUser[0].username,
+            picture: fromUser[0].picture
+          },
+          message: message
+        });
+      }
+
+      await mysql.query(
+        "INSERT INTO messages (data, from_id, to_id, date_time) VALUES (?,?,?,?)",
+        [message, req.userId, toId, new Date()]
+      );
+
+      res.json({ code: "MESSAGE_SENT" });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
