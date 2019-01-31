@@ -124,12 +124,13 @@ module.exports = (mysql, io) => {
         );
 
         io.to(session[0].websocket_id).emit("message", {
+          message: message,
+          date_time: new Date(),
           from: {
             id: fromUser[0].id,
             username: fromUser[0].username,
             picture: fromUser[0].picture
-          },
-          message: message
+          }
         });
       }
 
