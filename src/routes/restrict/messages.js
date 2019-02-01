@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 module.exports = (mysql, io) => {
-  router.post("/message/:toId", async (req, res) => {
+  router.post("/messages/:toId", async (req, res) => {
     try {
       const { message } = req.body;
       const { toId } = req.params;
