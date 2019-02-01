@@ -2,10 +2,19 @@ const router = require("express").Router();
 
 const { generateHash } = require("../../utils/crypto");
 const jwt = require("../../utils/jwt");
+const {
+  validationSchema,
+  validationResult
+} = require("../../middlewares/validations");
 
 module.exports = mysql => {
-  router.post("/register", async (req, res) => {
+  router.post("/register", validationSchema.register, async (req, res) => {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const { username, email, password } = req.body;
 
       const [verifyUser] = await mysql.execute(
