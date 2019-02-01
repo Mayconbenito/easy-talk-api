@@ -2,10 +2,19 @@ const router = require("express").Router();
 
 const { generateHash } = require("../../utils/crypto");
 const jwt = require("../../utils/jwt");
+const {
+  validationSchema,
+  validationResult
+} = require("../../middlewares/validations");
 
 module.exports = mysql => {
-  router.post("/login", async (req, res) => {
+  router.post("/login", validationSchema.login, async (req, res) => {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const { email, password } = req.body;
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
