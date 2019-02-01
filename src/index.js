@@ -16,8 +16,8 @@ const main = async () => {
     database: process.env.MYSQL_DATABASE
   });
 
-  const router = require("./router")(connection);
-  app.use("/", router);
+  app.use("/", require("./routes/free")(connection));
+  app.use("/app", require("./routes/restrict")(connection, io));
 
   io.on("connection", async socket => {
     const jwtKey = socket.handshake.query.jwt;
@@ -29,17 +29,12 @@ const main = async () => {
     );
 
     socket.on("disconnect", async () => {
-      console.log("Got disconnect!");
-
       await connection.query(
         "UPDATE sessions SET status = '0' WHERE websocket_id = ?",
         [socket.id]
       );
     });
   });
-
-  const authenticatedRouter = require("./authenticatedRouter")(connection, io);
-  app.use("/app", authenticatedRouter);
 };
 
 main();
