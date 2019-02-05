@@ -11,13 +11,13 @@ module.exports = (mysql, io) => {
         [toId]
       );
 
-      if (session[0].status === 1) {
+      if (session.length > 0 && session[0].status === 1) {
         const [fromUser] = await mysql.query(
           "SELECT * FROM users WHERE id = ?",
           [req.userId]
         );
 
-        io.to(session[0].websocket_id).emit("message", {
+        io.to(session[0].socket_id).emit("message", {
           message: message,
           date_time: new Date(),
           from: {

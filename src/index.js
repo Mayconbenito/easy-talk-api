@@ -24,13 +24,13 @@ const main = async () => {
 
     const jwtDecoded = await jwt.verify(jwtKey, process.env.JWT_HASH);
     await connection.query(
-      "INSERT INTO sessions (device, status, websocket_id, started_at, user_id) VALUES (?,?,?,?,?)",
-      ["BROWSER", 1, socket.id, new Date(), jwtDecoded.id]
+      "INSERT INTO sessions (status, socket_id, started_at, user_id) VALUES (?,?,?,?,?)",
+      [1, socket.id, new Date(), jwtDecoded.id]
     );
 
     socket.on("disconnect", async () => {
       await connection.query(
-        "UPDATE sessions SET status = '0' WHERE websocket_id = ?",
+        "UPDATE sessions SET status = '0' WHERE socket_id = ?",
         [socket.id]
       );
     });
