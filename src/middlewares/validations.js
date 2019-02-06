@@ -22,22 +22,16 @@ const validationSchema = {
       max: 60
     })
   ],
-  messages: [
-    {
-      post: [check("toId").isInt(), check("message").isString()]
-    }
-  ],
-  peoples: [
-    {
-      get: [check("page").isInt(), check("searchText").isString()]
-    }
-  ],
-  contacts: [
-    {
-      get: [check("page").isInt()],
-      post: [check("id").isInt()]
-    }
-  ]
+  messages: {
+    post: [check("toId").isInt(), check("message").isString()]
+  },
+  peoples: {
+    get: [check("page").isInt(), check("searchText").isString()]
+  },
+  contacts: {
+    get: [check("page").isInt()],
+    post: [check("id").isInt()]
+  }
 };
 
 module.exports = { validationSchema, validationResult };
