@@ -39,6 +39,6 @@ const main = async () => {
 
 main();
 
-server.listen(process.env.SERVER_PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log("Server running");
 });
