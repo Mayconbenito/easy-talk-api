@@ -19,6 +19,16 @@ module.exports = (mysql, io) => {
         const { message } = req.body;
         const { toId } = req.params;
 
+        const [verifyReciver] = await mysql.query(
+          "SELECT id FROM users WHERE id = ?",
+          [toId]
+        );
+
+        if (!verifyReciver.length > 0) {
+          res.json({ code: "USER_NOT_FOUND" });
+          return;
+        }
+
         const [session] = await mysql.query(
           "SELECT * FROM sessions WHERE user_id = ? ORDER BY id DESC LIMIT 1",
           [toId]
