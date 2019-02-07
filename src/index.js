@@ -8,13 +8,15 @@ require("dotenv").config();
 app.use(express.json());
 
 const main = async () => {
-  const mysql = require("mysql2/promise");
-  const connection = await mysql.createConnection({
+  const mysql = require("mysql2");
+  const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE
   });
+
+  const connection = pool.promise();
 
   app.use("/", require("./routes/free")(connection));
   app.use("/app", require("./routes/restrict")(connection, io));
