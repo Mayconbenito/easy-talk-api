@@ -33,7 +33,7 @@ module.exports = mysql => {
             [profile]
           );
 
-          if (!chat.to_id === profile) {
+          if (!chat || chat.to_id === profile) {
             [[chat]] = await mysql.query(chatQuery, [req.userId, profile]);
           }
 
