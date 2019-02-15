@@ -32,9 +32,9 @@ module.exports = mysql => {
 
           res.json({
             metadata: {
-              totalItems: totalItems[0].count,
+              totalItems: totalItems[0].count - 1,
               items: filtredUsers.length,
-              pages: Math.ceil(totalItems[0].count / numberItems)
+              pages: Math.ceil(totalItems[0].count / numberItems - 1)
             },
             users: filtredUsers
           });
