@@ -26,7 +26,7 @@ const main = async () => {
 
     const jwtDecoded = await jwt.verify(jwtKey, process.env.JWT_HASH);
     await connection.query(
-      "INSERT INTO sessions (status, socket_id, started_at, user_id) VALUES (?,?,?,?,?)",
+      "INSERT INTO sessions (status, socket_id, started_at, user_id) VALUES (?,?,?,?)",
       [1, socket.id, new Date(), jwtDecoded.id]
     );
 

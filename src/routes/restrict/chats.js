@@ -37,6 +37,8 @@ module.exports = mysql => {
             [[chat]] = await mysql.query(chatQuery, [req.userId, profile]);
           }
 
+          delete chat.id;
+
           return { ...chat, user: chatUser };
         })
       );

@@ -20,7 +20,7 @@ module.exports = mysql => {
         const numberItems = 10;
         const limit = numberItems * page - numberItems;
 
-        const [users] = await mysql.query(
+        let [users] = await mysql.query(
           `SELECT SQL_CALC_FOUND_ROWS id, username, picture FROM users WHERE email = ? OR username LIKE ? LIMIT ${limit},${numberItems}`,
           [searchText, `%${searchText}%`]
         );
@@ -28,13 +28,15 @@ module.exports = mysql => {
         const [totalItems] = await mysql.query("SELECT FOUND_ROWS() as count");
 
         if (users.length > 0) {
+          const filtredUsers = users.filter(user => user.id !== req.userId);
+
           res.json({
             metadata: {
               totalItems: totalItems[0].count,
-              items: users.length,
+              items: filtredUsers.length,
               pages: Math.ceil(totalItems[0].count / numberItems)
             },
-            users: users
+            users: filtredUsers
           });
         } else {
           res.status(200).json([]);
