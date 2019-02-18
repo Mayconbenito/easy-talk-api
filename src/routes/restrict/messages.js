@@ -34,22 +34,20 @@ module.exports = (mysql, io) => {
           [toId]
         );
 
-        if (session.length > 0 && session[0].status === 1) {
-          const [fromUser] = await mysql.query(
-            "SELECT * FROM users WHERE id = ?",
-            [req.userId]
-          );
+        const [fromUser] = await mysql.query(
+          "SELECT * FROM users WHERE id = ?",
+          [req.userId]
+        );
 
-          io.to(session[0].socket_id).emit("message", {
-            message: message,
-            date_time: new Date(),
-            from: {
-              id: fromUser[0].id,
-              username: fromUser[0].username,
-              picture: fromUser[0].picture
-            }
-          });
-        }
+        io.to(session[0].socket_id).emit("message", {
+          message: message,
+          date_time: new Date(),
+          from: {
+            id: fromUser[0].id,
+            username: fromUser[0].username,
+            picture: fromUser[0].picture
+          }
+        });
 
         await mysql.query(
           "INSERT INTO messages (data, from_id, to_id, date_time) VALUES (?,?,?,?)",
