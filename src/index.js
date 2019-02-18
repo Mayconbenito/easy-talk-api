@@ -3,6 +3,7 @@ const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const jwt = require("./utils/jwt");
+const ioMiddleware = require("./middlewares/io");
 require("dotenv").config();
 
 app.use(express.json());
@@ -20,6 +21,8 @@ const main = async () => {
 
   app.use("/", require("./routes/free")(connection));
   app.use("/app", require("./routes/restrict")(connection, io));
+
+  io.use(ioMiddleware);
 
   io.on("connection", async socket => {
     const jwtKey = socket.handshake.query.jwt;
