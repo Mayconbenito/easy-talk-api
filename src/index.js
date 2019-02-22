@@ -33,6 +33,33 @@ const main = async () => {
       [1, socket.id, new Date(), jwtDecoded.id]
     );
 
+    const [messages] = await connection.query(
+      "SELECT * FROM messages WHERE to_id = ? AND sending_status = 0 ORDER BY id DESC",
+      [jwtDecoded.id]
+    );
+
+    messages.forEach(async message => {
+      const [fromUser] = await connection.query(
+        "SELECT id, username, picture FROM users WHERE id = ?",
+        [message.from_id]
+      );
+
+      io.to(socket.id).emit("message", {
+        message: message.data,
+        date_time: message.date_time,
+        from: {
+          id: fromUser[0].id,
+          username: fromUser[0].username,
+          picture: fromUser[0].picture
+        }
+      });
+
+      await connection.query(
+        "UPDATE messages SET sending_status = ? WHERE id = ?",
+        [1, message.id]
+      );
+    });
+
     socket.on("disconnect", async () => {
       await connection.query(
         "UPDATE sessions SET status = '0' WHERE socket_id = ?",
