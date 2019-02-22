@@ -20,27 +20,55 @@ module.exports = mysql => {
         const numberItems = 10;
         const limit = numberItems * page - numberItems;
 
-        let [users] = await mysql.query(
+        const [selectUsers] = await mysql.query(
           `SELECT SQL_CALC_FOUND_ROWS id, username, picture FROM users WHERE email = ? OR username LIKE ? LIMIT ${limit},${numberItems}`,
           [searchText, `%${searchText}%`]
         );
 
-        const [totalItems] = await mysql.query("SELECT FOUND_ROWS() as count");
-
-        if (users.length > 0) {
-          const filtredUsers = users.filter(user => user.id !== req.userId);
-
-          res.json({
-            metadata: {
-              totalItems: totalItems[0].count - 1,
-              items: filtredUsers.length,
-              pages: Math.ceil(totalItems[0].count / numberItems - 1)
-            },
-            users: filtredUsers
-          });
-        } else {
-          res.status(200).json([]);
+        if (!selectUsers.length > 0) {
+          res.json([]);
+          return;
         }
+
+        const [selectTotalItems] = await mysql.query(
+          "SELECT id FROM users WHERE email = ? OR username LIKE ?",
+          [searchText, `%${searchText}%`]
+        );
+
+        const totalItems = selectTotalItems.length;
+
+        const filtredUsers = selectUsers.filter(user => user.id !== req.userId);
+
+        let decrementValue = 0;
+        if (filtredUsers.length !== selectUsers.length) {
+          decrementValue = 1;
+        }
+
+        const verifyFriend = Promise.all(
+          filtredUsers.map(async user => {
+            const [selectFriend] = await mysql.query(
+              "SELECT * FROM friends WHERE user_a = ? AND user_b = ?",
+              [req.userId, user.id]
+            );
+
+            if (selectFriend.length > 0) {
+              return { ...user, friend: true };
+            }
+
+            return { ...user, friend: false };
+          })
+        );
+
+        const users = await verifyFriend;
+
+        res.json({
+          metadata: {
+            totalItems: totalItems - decrementValue,
+            items: users.length,
+            pages: Math.ceil(totalItems / (numberItems - decrementValue))
+          },
+          users: users
+        });
       } catch (e) {
         console.log(e);
         res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
