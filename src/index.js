@@ -6,6 +6,10 @@ const jwt = require("./utils/jwt");
 const ioMiddleware = require("./middlewares/io");
 require("dotenv").config();
 
+if (process.env.NODE_ENV === "production") {
+  require("newrelic");
+}
+
 app.use(express.json());
 
 const main = async () => {
@@ -26,6 +30,7 @@ const main = async () => {
 
   io.on("connection", async socket => {
     const jwtKey = socket.handshake.query.jwt;
+    console.log("conectado");
 
     const jwtDecoded = await jwt.verify(jwtKey, process.env.JWT_HASH);
     await connection.query(
@@ -61,6 +66,7 @@ const main = async () => {
     });
 
     socket.on("disconnect", async () => {
+      console.log("desconectado");
       await connection.query(
         "UPDATE sessions SET status = '0' WHERE socket_id = ?",
         [socket.id]
