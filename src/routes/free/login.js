@@ -7,7 +7,9 @@ const {
   validationResult
 } = require("../../middlewares/validations");
 
-module.exports = mysql => {
+const Users = require("../../models/users");
+
+module.exports = () => {
   router.post("/login", validationSchema.login, async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -18,20 +20,17 @@ module.exports = mysql => {
       const { email, password } = req.body;
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
-      const [login] = await mysql.execute(
-        "SELECT id FROM users WHERE email = ? AND password = ?",
-        [email, passwordHash]
-      );
 
-      if (login.length === 0) {
-        res.status(401).json({ code: "INVALID_LOGIN_DATA" });
-        return;
+      const user = await Users.findOne({
+        email: email,
+        password: passwordHash
+      });
+
+      if (!user) {
+        return res.status(401).json({ code: "INVALID_LOGIN_DATA" });
       }
 
-      const jwtToken = await jwt.sign(
-        { id: login[0].id },
-        process.env.JWT_HASH
-      );
+      const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
       res.status(200).json({ jwt: jwtToken, code: "LOGIN_SUCCESS" });
     } catch (e) {
