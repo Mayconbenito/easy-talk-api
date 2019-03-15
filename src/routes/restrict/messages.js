@@ -5,7 +5,10 @@ const {
   validationResult
 } = require("../../middlewares/validations");
 
-module.exports = (mysql, io) => {
+const Users = require("../../models/users");
+const Chats = require("../../models/chats");
+
+module.exports = io => {
   router.post(
     "/messages/:toId",
     validationSchema.messages.post,
@@ -19,46 +22,63 @@ module.exports = (mysql, io) => {
         const { message } = req.body;
         const { toId } = req.params;
 
-        const [verifyReciver] = await mysql.query(
-          "SELECT id FROM users WHERE id = ?",
-          [toId]
-        );
+        const verifyReciver = await Users.findById(toId);
 
-        if (!verifyReciver.length > 0) {
-          res.json({ code: "USER_NOT_FOUND" });
-          return;
+        if (!verifyReciver) {
+          return res.json({ code: "USER_NOT_FOUND" });
         }
 
-        const [session] = await mysql.query(
-          "SELECT * FROM sessions WHERE user_id = ? ORDER BY id DESC LIMIT 1",
-          [toId]
-        );
+        const fromUser = await Users.findById(req.userId);
 
-        let sendingStatus = 0;
-        if (session.length > 0 && session[0].status === 1) {
-          sendingStatus = 1;
-          const [fromUser] = await mysql.query(
-            "SELECT id, username, picture FROM users WHERE id = ?",
-            [req.userId]
-          );
-
-          io.to(session[0].socket_id).emit("message", {
+        if (verifyReciver.session.status === "online") {
+          io.to(verifyReciver.session.socketId).emit("message", {
             message: message,
-            date_time: new Date(),
+            dateTime: new Date(),
             from: {
-              id: fromUser[0].id,
-              username: fromUser[0].username,
-              picture: fromUser[0].picture
+              id: fromUser._id,
+              username: fromUser.name
             }
           });
         }
 
-        await mysql.query(
-          "INSERT INTO messages (data, from_id, to_id, sending_status, date_time) VALUES (?,?,?,?,?)",
-          [message, req.userId, toId, sendingStatus, new Date()]
-        );
+        const verifyChat = await Chats.findOne({
+          $or: [
+            { participants: [toId, req.userId] },
+            { participants: [req.userId, toId] }
+          ]
+        });
 
-        res.json({ code: "MESSAGE_SENT" });
+        // Verify if the chats exists
+        if (!verifyChat) {
+          // Create a chat if not exists and add the message
+          Chats.create({
+            participants: [toId, req.userId],
+            newestMessage: message,
+            messages: {
+              sender: req.userId,
+              reciver: toId,
+              data: message,
+              status: "sent",
+              type: "text"
+            }
+          });
+        } else {
+          // Add the message to the chat if the chat exists
+          const messages = {
+            sender: req.userId,
+            reciver: toId,
+            data: message,
+            status: "sent",
+            type: "text"
+          };
+
+          await Chats.findOneAndUpdate(
+            { _id: verifyChat._id },
+            { newestMessage: message, $push: { messages: messages } }
+          );
+        }
+
+        return res.json({ code: "MESSAGE_SENT" });
       } catch (e) {
         console.log(e);
         res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
