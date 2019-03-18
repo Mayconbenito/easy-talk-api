@@ -30,7 +30,7 @@ const validationSchema = {
   },
   contacts: {
     get: [check("page").isInt()],
-    post: [check("id").isInt()]
+    post: [check("id").isString()]
   }
 };
 

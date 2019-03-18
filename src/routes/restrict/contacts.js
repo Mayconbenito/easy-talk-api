@@ -5,6 +5,8 @@ const {
   validationResult
 } = require("../../middlewares/validations");
 
+const Users = require("../../models/users");
+
 module.exports = mysql => {
   router.get(
     "/contacts/:page",
@@ -18,27 +20,27 @@ module.exports = mysql => {
 
         const { page } = req.params;
         const numberItems = 10;
-        const limit = numberItems * page - numberItems;
 
-        const [users] = await mysql.query(
-          `SELECT SQL_CALC_FOUND_ROWS users.id, users.username, users.picture FROM friends INNER JOIN users ON friends.user_b = users.id WHERE user_a = ? LIMIT ${limit},${numberItems}`,
-          [req.userId]
-        );
+        const { contacts } = await Users.findById(req.userId)
+          .populate("contacts")
+          .select("-_id +contacts")
+          .skip(numberItems * (page - 1))
+          .limit(numberItems);
 
-        const [totalItems] = await mysql.query("SELECT FOUND_ROWS() as count");
+        const totalItems = await Users.countDocuments({ _id: req.userId });
 
-        if (users.length > 0) {
-          res.json({
-            metadata: {
-              totalItems: totalItems[0].count,
-              items: users.length,
-              pages: Math.ceil(totalItems[0].count / numberItems)
-            },
-            users: users
-          });
-        } else {
-          res.status(200).json([]);
+        if (!contacts.length > 0) {
+          return res.status(200).json([]);
         }
+
+        res.json({
+          metadata: {
+            totalItems: totalItems,
+            items: contacts.length,
+            pages: Math.ceil(totalItems / numberItems)
+          },
+          users: contacts
+        });
       } catch (e) {
         console.log(e);
         res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
