@@ -7,7 +7,7 @@ const {
 
 const Users = require("../../models/users");
 
-module.exports = mysql => {
+module.exports = () => {
   router.get(
     "/contacts/:page",
     validationSchema.contacts.get,
@@ -57,33 +57,27 @@ module.exports = mysql => {
 
       const { id } = req.body;
 
-      const [verifyUser] = await mysql.query(
-        "SELECT id FROM users WHERE id = ?",
-        [id]
-      );
-
-      if (!verifyUser.length > 0) {
-        res.status(200).json({ code: "USER_NOT_FOUND" });
-        return;
+      const verifyFriend = await Users.findById(id);
+      if (!verifyFriend) {
+        return res.status(200).json({ code: "USER_NOT_FOUND" });
       }
 
-      const [verifyFriend] = await mysql.query(
-        "SELECT * FROM friends WHERE user_a = ? AND user_b = ?",
-        [req.userId, id]
-      );
+      const verifyContact = await Users.findOne({
+        _id: req.userId,
+        contacts: id
+      });
 
-      if (verifyFriend.length > 0) {
-        res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
-        return;
+      if (verifyContact) {
+        return res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
       }
 
-      const [addUser] = await mysql.query(
-        "INSERT INTO friends (user_a, user_b, date_time) VALUES (?,?,?)",
-        [req.userId, id, new Date()]
+      const addContact = await Users.findOneAndUpdate(
+        { _id: req.userId },
+        { $push: { contacts: id } }
       );
 
-      if (addUser.affectedRows === 1) {
-        res.status(200).json({ code: "CONTACT_ADDED" });
+      if (addContact) {
+        return res.status(200).json({ code: "CONTACT_ADDED" });
       }
     } catch (e) {
       console.log(e);
