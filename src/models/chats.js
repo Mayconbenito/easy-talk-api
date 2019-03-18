@@ -14,7 +14,9 @@ const messagesSchema = new mongoose.Schema({
 });
 
 const schema = new mongoose.Schema({
-  participants: { type: Array, required: true, ref: "Users" },
+  participants: [
+    { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
+  ],
   newestMessage: { type: String, required: true },
   messages: [messagesSchema],
   createdAt: { type: Date, default: Date.now }
