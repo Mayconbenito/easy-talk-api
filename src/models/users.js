@@ -11,7 +11,9 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
   createdAt: { type: Date, default: Date.now },
-  contacts: { type: Array, required: true, ref: "Users" },
+  contacts: [
+    { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
+  ],
   session: { sessionSchema }
 });
 
