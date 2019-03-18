@@ -1,47 +1,27 @@
 const router = require("express").Router();
 
-module.exports = mysql => {
+const Chats = require("../../models/chats");
+
+module.exports = () => {
   router.get("/chats", async (req, res) => {
     try {
-      const [messages] = await mysql.query(
-        "SELECT to_id, from_id FROM messages WHERE to_id = ? OR from_id = ?",
-        [req.userId, req.userId]
-      );
+      const allChats = await Chats.find({ participants: req.userId })
+        .populate("participants")
+        .select("-messages");
 
-      const usersId = await Promise.all(
-        messages.map(chat => {
-          if (chat.to_id === req.userId) {
-            return chat.from_id;
-          } else {
-            return chat.to_id;
-          }
-        })
-      );
+      // For each chat, get the other user object and create a property called fromUser
+      const chats = allChats.map(chat => {
+        const [fromUser] = chat.participants.filter(
+          participant => participant._id != req.userId
+        );
 
-      const uniqueUsersId = usersId.filter(
-        (item, pos) => usersId.indexOf(item) === pos
-      );
+        if (fromUser) {
+          chat.participants = undefined;
+          fromUser.contacts = undefined;
 
-      const chatQuery =
-        "SELECT id, data AS message, date_time FROM messages WHERE to_id = ? AND from_id = ? ORDER BY id DESC LIMIT 1";
-
-      const chats = await Promise.all(
-        uniqueUsersId.map(async profile => {
-          let [[chat]] = await mysql.query(chatQuery, [profile, req.userId]);
-          let [[chatUser]] = await mysql.query(
-            "SELECT id, username, picture FROM users WHERE id = ?",
-            [profile]
-          );
-
-          if (!chat || chat.to_id === profile) {
-            [[chat]] = await mysql.query(chatQuery, [req.userId, profile]);
-          }
-
-          delete chat.id;
-
-          return { ...chat, user: chatUser };
-        })
-      );
+          return { ...chat.toObject(), fromUser: { ...fromUser.toObject() } };
+        }
+      });
 
       res.json({ chats });
     } catch (e) {
