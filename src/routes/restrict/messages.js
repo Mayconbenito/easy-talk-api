@@ -51,7 +51,7 @@ module.exports = io => {
         // Verify if the chats exists
         if (!verifyChat) {
           // Create a chat if not exists and add the message
-          Chats.create({
+          await Chats.create({
             participants: [toId, req.userId],
             newestMessage: message,
             messages: {
