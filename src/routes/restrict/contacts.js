@@ -29,6 +29,7 @@ module.exports = () => {
 
         contacts.map(contact => {
           contact.contacts = undefined;
+          contact.session = undefined;
           return contact;
         });
 
