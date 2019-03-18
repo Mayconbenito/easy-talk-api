@@ -27,6 +27,11 @@ module.exports = () => {
           .skip(numberItems * (page - 1))
           .limit(numberItems);
 
+        contacts.map(contact => {
+          contact.contacts = undefined;
+          return contact;
+        });
+
         const totalItems = await Users.countDocuments({ _id: req.userId });
 
         if (!contacts.length > 0) {
