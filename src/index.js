@@ -11,7 +11,7 @@ app.use(express.json());
 const main = async () => {
   const Users = require("./models/users");
 
-  app.use("/", require("./routes/free"));
+  app.use("/", require("./routes/free")());
   app.use("/app", require("./routes/restrict")(io));
 
   io.use(ioMiddleware);

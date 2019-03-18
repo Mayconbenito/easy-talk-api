@@ -3,11 +3,11 @@ const authMiddleware = require("../../middlewares/auth");
 
 router.use(authMiddleware);
 
-module.exports = (mysql, io) => {
-  router.use(require("./chats")(mysql));
-  router.use(require("./contacts")(mysql));
-  router.use(require("./messages")(mysql, io));
-  router.use(require("./peoples.js")(mysql));
+module.exports = io => {
+  router.use(require("./chats")());
+  router.use(require("./contacts")());
+  router.use(require("./messages")(io));
+  router.use(require("./peoples.js")());
 
   return router;
 };
