@@ -27,7 +27,7 @@ module.exports = mysql => {
             { email: searchText }
           ]
         })
-          .select("-contacts")
+          .select("-contacts -session")
           .skip(numberItems * (page - 1))
           .limit(numberItems);
 
