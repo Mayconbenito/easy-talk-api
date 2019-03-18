@@ -2,8 +2,7 @@ const mongoose = require("../mongodb");
 
 const sessionSchema = new mongoose.Schema({
   socketId: { type: String, required: true },
-  status: { type: String, enum: ["online", "offline"], required: true },
-  createdAt: { type: Date, default: Date.now }
+  status: { type: String, enum: ["online", "offline"], required: true }
 });
 
 const schema = new mongoose.Schema({
@@ -14,7 +13,7 @@ const schema = new mongoose.Schema({
   contacts: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
   ],
-  session: { sessionSchema }
+  session: { type: Object, default: sessionSchema }
 });
 
 module.exports = mongoose.model("Users", schema);
