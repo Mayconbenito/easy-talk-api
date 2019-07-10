@@ -7,7 +7,9 @@ const {
   validationResult
 } = require("../../middlewares/validations");
 
-module.exports = mysql => {
+const Users = require("../../models/users");
+
+module.exports = () => {
   router.post("/register", validationSchema.register, async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -17,27 +19,21 @@ module.exports = mysql => {
 
       const { username, email, password } = req.body;
 
-      const [verifyUser] = await mysql.execute(
-        "SELECT id FROM users WHERE email = ?",
-        [email]
-      );
+      const findUser = await Users.findOne({ email });
 
-      if (verifyUser.length > 0) {
-        res.status(401).json({ code: "EMAIL_IN_USE" });
-        return;
+      if (findUser) {
+        return res.status(401).json({ code: "EMAIL_IN_USE" });
       }
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
 
-      const [registerUser] = await mysql.execute(
-        "INSERT INTO users (username, email, password, created_at) VALUES (?,?,?,?)",
-        [username, email, passwordHash, new Date()]
-      );
+      const user = await Users.create({
+        name: username,
+        email: email,
+        password: passwordHash
+      });
 
-      const jwtToken = await jwt.sign(
-        { id: registerUser.insertId },
-        process.env.JWT_HASH
-      );
+      const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
       res.status(200).json({ jwt: jwtToken, code: "REGISTER_SUCCESS" });
     } catch (e) {

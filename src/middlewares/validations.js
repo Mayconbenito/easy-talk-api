@@ -23,14 +23,14 @@ const validationSchema = {
     })
   ],
   messages: {
-    post: [check("toId").isInt(), check("message").isString()]
+    post: [check("toId").isString(), check("message").isString()]
   },
   peoples: {
     get: [check("page").isInt(), check("searchText").isString()]
   },
   contacts: {
     get: [check("page").isInt()],
-    post: [check("id").isInt()]
+    post: [check("id").isString()]
   }
 };
 

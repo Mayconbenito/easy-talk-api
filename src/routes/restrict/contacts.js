@@ -5,7 +5,9 @@ const {
   validationResult
 } = require("../../middlewares/validations");
 
-module.exports = mysql => {
+const Users = require("../../models/users");
+
+module.exports = () => {
   router.get(
     "/contacts/:page",
     validationSchema.contacts.get,
@@ -18,27 +20,33 @@ module.exports = mysql => {
 
         const { page } = req.params;
         const numberItems = 10;
-        const limit = numberItems * page - numberItems;
 
-        const [users] = await mysql.query(
-          `SELECT SQL_CALC_FOUND_ROWS users.id, users.username, users.picture FROM friends INNER JOIN users ON friends.user_b = users.id WHERE user_a = ? LIMIT ${limit},${numberItems}`,
-          [req.userId]
-        );
+        const { contacts } = await Users.findById(req.userId)
+          .populate("contacts")
+          .select("-_id +contacts")
+          .skip(numberItems * (page - 1))
+          .limit(numberItems);
 
-        const [totalItems] = await mysql.query("SELECT FOUND_ROWS() as count");
+        contacts.map(contact => {
+          contact.contacts = undefined;
+          contact.session = undefined;
+          return contact;
+        });
 
-        if (users.length > 0) {
-          res.json({
-            metadata: {
-              totalItems: totalItems[0].count,
-              items: users.length,
-              pages: Math.ceil(totalItems[0].count / numberItems)
-            },
-            users: users
-          });
-        } else {
-          res.status(200).json([]);
+        const totalItems = await Users.countDocuments({ _id: req.userId });
+
+        if (!contacts.length > 0) {
+          return res.status(200).json([]);
         }
+
+        res.json({
+          metadata: {
+            totalItems: totalItems,
+            items: contacts.length,
+            pages: Math.ceil(totalItems / numberItems)
+          },
+          users: contacts
+        });
       } catch (e) {
         console.log(e);
         res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
@@ -55,33 +63,27 @@ module.exports = mysql => {
 
       const { id } = req.body;
 
-      const [verifyUser] = await mysql.query(
-        "SELECT id FROM users WHERE id = ?",
-        [id]
-      );
-
-      if (!verifyUser.length > 0) {
-        res.status(200).json({ code: "USER_NOT_FOUND" });
-        return;
+      const verifyFriend = await Users.findById(id);
+      if (!verifyFriend) {
+        return res.status(200).json({ code: "USER_NOT_FOUND" });
       }
 
-      const [verifyFriend] = await mysql.query(
-        "SELECT * FROM friends WHERE user_a = ? AND user_b = ?",
-        [req.userId, id]
-      );
+      const verifyContact = await Users.findOne({
+        _id: req.userId,
+        contacts: id
+      });
 
-      if (verifyFriend.length > 0) {
-        res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
-        return;
+      if (verifyContact) {
+        return res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
       }
 
-      const [addUser] = await mysql.query(
-        "INSERT INTO friends (user_a, user_b, date_time) VALUES (?,?,?)",
-        [req.userId, id, new Date()]
+      const addContact = await Users.findOneAndUpdate(
+        { _id: req.userId },
+        { $push: { contacts: id } }
       );
 
-      if (addUser.affectedRows === 1) {
-        res.status(200).json({ code: "CONTACT_ADDED" });
+      if (addContact) {
+        return res.status(200).json({ code: "CONTACT_ADDED" });
       }
     } catch (e) {
       console.log(e);

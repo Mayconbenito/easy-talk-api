@@ -1,8 +1,8 @@
 const router = require("express").Router();
 
-module.exports = mysql => {
-  router.use(require("./login")(mysql));
-  router.use(require("./register")(mysql));
+module.exports = () => {
+  router.use(require("./login")());
+  router.use(require("./register")());
 
   return router;
 };
