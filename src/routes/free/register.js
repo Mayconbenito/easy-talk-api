@@ -37,7 +37,7 @@ module.exports = () => {
 
       res.status(200).json({ jwt: jwtToken, code: "REGISTER_SUCCESS" });
     } catch (e) {
-      console.log(e);
+      console.log("Error", e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
     }
   });

@@ -1,10 +1,5 @@
 const mongoose = require("../mongodb");
 
-const sessionSchema = new mongoose.Schema({
-  socketId: { type: String, required: true },
-  status: { type: String, enum: ["online", "offline"], required: true }
-});
-
 const schema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -13,7 +8,7 @@ const schema = new mongoose.Schema({
   contacts: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
   ],
-  session: { type: Object, default: sessionSchema }
+  session: { type: Object }
 });
 
 module.exports = mongoose.model("Users", schema);
