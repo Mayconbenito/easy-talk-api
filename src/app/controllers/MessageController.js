@@ -1,16 +1,9 @@
-const { validationResult } = require("../middlewares/validations");
-
 const Users = require("../models/users");
 const Chats = require("../models/chats");
 
 module.exports = {
   store: async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { message } = req.body;
       const { toId } = req.params;
 

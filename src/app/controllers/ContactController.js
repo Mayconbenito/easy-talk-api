@@ -1,15 +1,8 @@
-const { validationResult } = require("../middlewares/validations");
-
 const Users = require("../models/users");
 
 module.exports = {
   index: async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { page } = req.params;
       const numberItems = 10;
 
@@ -46,11 +39,6 @@ module.exports = {
   },
   store: async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { id } = req.params;
 
       const verifyFriend = await Users.findById(id);

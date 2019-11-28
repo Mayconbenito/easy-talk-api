@@ -1,4 +1,5 @@
 const routes = require("express").Router();
+const { celebrate } = require("celebrate");
 
 const SessionController = require("./app/controllers/SessionController");
 const UserController = require("./app/controllers/UserController");
@@ -7,37 +8,46 @@ const MessageController = require("./app/controllers/MessageController");
 const ContactController = require("./app/controllers/ContactController");
 const SearchController = require("./app/controllers/SearchController");
 
-const { validationSchema } = require("./app/middlewares/validations");
 const auth = require("./app/middlewares/auth");
+const validators = require("./app/validators");
 
-routes.post("/sessions", validationSchema.login, SessionController.store);
-routes.post("/register", validationSchema.register, UserController.store);
+routes.post(
+  "/sessions",
+  celebrate(validators.Session.store),
+  SessionController.store
+);
+routes.post(
+  "/register",
+  celebrate(validators.User.store),
+  UserController.store
+);
 
 routes.get("/chats", auth, ChatController.index);
 routes.post(
   "/messages/:toId",
   auth,
-  validationSchema.messages.post,
+  celebrate(validators.Message.store),
   MessageController.store
 );
 
 routes.post(
   "/contacts/:id",
   auth,
-  validationSchema.contacts.post,
+  celebrate(validators.Contact.store),
   ContactController.store
 );
 routes.get(
   "/contacts",
   auth,
-  validationSchema.contacts.get,
+  celebrate(validators.Contact.index),
   ContactController.index
 );
 
 routes.get(
   "/search/users",
   auth,
-  validationSchema.peoples.get,
+  celebrate(validators.Search.index),
   SearchController.index
 );
+
 module.exports = routes;
