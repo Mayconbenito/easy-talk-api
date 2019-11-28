@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
+const { errors } = require("celebrate");
 const jwt = require("./utils/jwt");
 const ioMiddleware = require("./app/middlewares/io");
 require("dotenv").config();
@@ -9,6 +10,7 @@ const routes = require("./routes");
 
 app.use(express.json());
 app.use(routes);
+app.use(errors());
 
 const main = async () => {
   const Users = require("./app/models/users");

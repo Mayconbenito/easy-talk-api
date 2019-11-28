@@ -1,17 +1,11 @@
 const { generateHash } = require("../../utils/crypto");
 const jwt = require("../../utils/jwt");
-const { validationResult } = require("../middlewares/validations");
 
 const Users = require("../models/users");
 
 module.exports = {
   store: async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { email, password } = req.body;
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
