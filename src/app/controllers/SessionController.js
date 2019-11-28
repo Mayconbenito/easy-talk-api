@@ -1,16 +1,11 @@
-const router = require("express").Router();
-
 const { generateHash } = require("../../utils/crypto");
 const jwt = require("../../utils/jwt");
-const {
-  validationSchema,
-  validationResult
-} = require("../../middlewares/validations");
+const { validationResult } = require("../middlewares/validations");
 
-const Users = require("../../models/users");
+const Users = require("../models/users");
 
-module.exports = () => {
-  router.post("/login", validationSchema.login, async (req, res) => {
+module.exports = {
+  store: async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -37,7 +32,5 @@ module.exports = () => {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
     }
-  });
-
-  return router;
+  }
 };

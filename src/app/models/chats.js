@@ -1,4 +1,4 @@
-const mongoose = require("../mongodb");
+const mongoose = require("../../config/mongodb");
 
 const messagesSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.ObjectId, required: true, ref: "Users" },

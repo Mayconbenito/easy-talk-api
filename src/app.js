@@ -3,16 +3,20 @@ const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const jwt = require("./utils/jwt");
-const ioMiddleware = require("./middlewares/io");
+const ioMiddleware = require("./app/middlewares/io");
 require("dotenv").config();
+const routes = require("./routes");
 
 app.use(express.json());
+app.use(routes);
 
 const main = async () => {
-  const Users = require("./models/users");
+  const Users = require("./app/models/users");
 
-  app.use("/", require("./routes/free")());
-  app.use("/app", require("./routes/restrict")(io));
+  app.use((req, res, next) => {
+    req.io = io;
+    return next();
+  });
 
   io.use(ioMiddleware);
 
@@ -38,6 +42,4 @@ const main = async () => {
 
 main();
 
-server.listen(process.env.PORT, () => {
-  console.log("Server running");
-});
+module.exports = app;
