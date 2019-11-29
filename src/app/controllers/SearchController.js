@@ -3,8 +3,8 @@ const Users = require("../models/users");
 module.exports = {
   index: async (req, res) => {
     try {
-      const { searchText, page } = req.query;
-      const numberItems = 10;
+      let { searchText, page, limit } = req.query;
+      limit = parseInt(limit || 10);
 
       const findUsers = await Users.find({
         $or: [
@@ -13,8 +13,8 @@ module.exports = {
         ]
       })
         .select("-contacts -session")
-        .skip(numberItems * (page - 1))
-        .limit(numberItems);
+        .skip(limit * (page - 1))
+        .limit(limit);
 
       const totalItems = await Users.countDocuments({
         $or: [
@@ -36,7 +36,7 @@ module.exports = {
       const metadata = {
         totalItems: totalItems - decrementUser,
         items: users.length,
-        pages: Math.ceil(totalItems / (numberItems - decrementUser))
+        pages: Math.ceil(totalItems / (limit - decrementUser))
       };
 
       return res.json({

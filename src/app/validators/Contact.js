@@ -6,7 +6,8 @@ module.exports = {
     query: Joi.object().keys({
       page: Joi.number()
         .integer()
-        .required()
+        .required(),
+      limit: Joi.number().integer()
     })
   },
   store: {

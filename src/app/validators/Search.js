@@ -6,7 +6,8 @@ module.exports = {
       searchText: Joi.string().required(),
       page: Joi.number()
         .integer()
-        .required()
+        .required(),
+      limit: Joi.number().integer()
     })
   }
 };
