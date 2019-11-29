@@ -11,7 +11,7 @@ module.exports = {
       const findUser = await Users.findOne({ email });
 
       if (findUser) {
-        return res.status(401).json({ code: "EMAIL_IN_USE" });
+        return res.status(400).json({ code: "EMAIL_ALREADY_USED" });
       }
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
@@ -24,7 +24,7 @@ module.exports = {
 
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
-      res.status(200).json({ jwt: jwtToken, code: "REGISTER_SUCCESS" });
+      res.json({ jwt: jwtToken });
     } catch (e) {
       console.log("Error", e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });

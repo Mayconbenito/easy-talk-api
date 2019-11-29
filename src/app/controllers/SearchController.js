@@ -23,10 +23,6 @@ module.exports = {
         ]
       });
 
-      if (!findUsers.length > 0) {
-        return res.json([]);
-      }
-
       let decrementUser = 0;
 
       // Verify if the logged user is on the array
@@ -37,13 +33,15 @@ module.exports = {
         decrementUser = 1;
       }
 
+      const metadata = {
+        totalItems: totalItems - decrementUser,
+        items: users.length,
+        pages: Math.ceil(totalItems / (numberItems - decrementUser))
+      };
+
       return res.json({
-        metadata: {
-          totalItems: totalItems - decrementUser,
-          items: users.length,
-          pages: Math.ceil(totalItems / (numberItems - decrementUser))
-        },
-        users: users
+        metadata,
+        users
       });
     } catch (e) {
       console.log(e);

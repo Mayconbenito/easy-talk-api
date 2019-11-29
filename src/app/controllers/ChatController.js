@@ -21,7 +21,11 @@ module.exports = {
         }
       });
 
-      res.json({ chats });
+      const metadata = {
+        items: chats.length
+      };
+
+      return res.json({ metadata, chats });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });

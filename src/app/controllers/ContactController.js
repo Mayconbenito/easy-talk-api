@@ -20,16 +20,14 @@ module.exports = {
 
       const totalItems = await Users.countDocuments({ _id: req.userId });
 
-      if (!contacts.length > 0) {
-        return res.status(200).json([]);
-      }
+      const metadata = {
+        totalItems: totalItems,
+        items: contacts.length,
+        pages: Math.ceil(totalItems / numberItems)
+      };
 
-      res.json({
-        metadata: {
-          totalItems: totalItems,
-          items: contacts.length,
-          pages: Math.ceil(totalItems / numberItems)
-        },
+      return res.json({
+        metadata,
         users: contacts
       });
     } catch (e) {
@@ -43,7 +41,7 @@ module.exports = {
 
       const verifyFriend = await Users.findById(id);
       if (!verifyFriend) {
-        return res.status(200).json({ code: "USER_NOT_FOUND" });
+        return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
       const verifyContact = await Users.findOne({
@@ -52,7 +50,7 @@ module.exports = {
       });
 
       if (verifyContact) {
-        return res.status(200).json({ code: "CONTACT_ALREADY_ADDED" });
+        return res.status(400).json({ code: "CONTACT_ALREADY_ADDED" });
       }
 
       const addContact = await Users.findOneAndUpdate(
@@ -61,7 +59,7 @@ module.exports = {
       );
 
       if (addContact) {
-        return res.status(200).json({ code: "CONTACT_ADDED" });
+        return res.status(204).send();
       }
     } catch (e) {
       console.log(e);

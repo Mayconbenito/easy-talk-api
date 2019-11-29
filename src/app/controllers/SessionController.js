@@ -16,12 +16,12 @@ module.exports = {
       });
 
       if (!user) {
-        return res.status(401).json({ code: "INVALID_LOGIN_DATA" });
+        return res.status(401).json({ code: "INVALID_CREDENTIALS" });
       }
 
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
-      res.status(200).json({ jwt: jwtToken, code: "LOGIN_SUCCESS" });
+      res.json({ jwt: jwtToken });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
