@@ -6,7 +6,7 @@ module.exports = {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
 
-      const { contacts } = await Users.findById(req.userId)
+      const { contacts } = await Users.findById(req.user.id)
         .populate("contacts")
         .select("-_id +contacts")
         .skip(limit * (page - 1))
@@ -18,7 +18,7 @@ module.exports = {
         return contact;
       });
 
-      const totalItems = await Users.countDocuments({ _id: req.userId });
+      const totalItems = await Users.countDocuments({ _id: req.user.id });
 
       const metadata = {
         totalItems: totalItems,
@@ -45,7 +45,7 @@ module.exports = {
       }
 
       const verifyContact = await Users.findOne({
-        _id: req.userId,
+        _id: req.user.id,
         contacts: id
       });
 
@@ -54,7 +54,7 @@ module.exports = {
       }
 
       const addContact = await Users.findOneAndUpdate(
-        { _id: req.userId },
+        { _id: req.user.id },
         { $push: { contacts: id } }
       );
 
