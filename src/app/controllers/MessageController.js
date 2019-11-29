@@ -10,7 +10,7 @@ module.exports = {
       const verifyReciver = await Users.findById(toId);
 
       if (!verifyReciver) {
-        return res.json({ code: "USER_NOT_FOUND" });
+        return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
       const fromUser = await Users.findById(req.userId);
@@ -63,7 +63,7 @@ module.exports = {
         );
       }
 
-      return res.json({ code: "MESSAGE_SENT" });
+      return res.status(204).send();
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
