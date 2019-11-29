@@ -3,14 +3,14 @@ const Users = require("../models/users");
 module.exports = {
   index: async (req, res) => {
     try {
-      const { page } = req.params;
-      const numberItems = 10;
+      let { page, limit } = req.query;
+      limit = parseInt(limit || 10);
 
       const { contacts } = await Users.findById(req.userId)
         .populate("contacts")
         .select("-_id +contacts")
-        .skip(numberItems * (page - 1))
-        .limit(numberItems);
+        .skip(limit * (page - 1))
+        .limit(limit);
 
       contacts.map(contact => {
         contact.contacts = undefined;
@@ -23,7 +23,7 @@ module.exports = {
       const metadata = {
         totalItems: totalItems,
         items: contacts.length,
-        pages: Math.ceil(totalItems / numberItems)
+        pages: Math.ceil(totalItems / limit)
       };
 
       return res.json({
