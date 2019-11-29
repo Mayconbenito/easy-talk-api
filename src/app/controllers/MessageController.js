@@ -13,7 +13,7 @@ module.exports = {
         return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
-      const fromUser = await Users.findById(req.userId);
+      const fromUser = await Users.findById(req.user.id);
 
       if (verifyReciver.session && verifyReciver.session.status === "online") {
         req.io.to(verifyReciver.session.socketId).emit("message", {
@@ -28,8 +28,8 @@ module.exports = {
 
       const verifyChat = await Chats.findOne({
         $or: [
-          { participants: [toId, req.userId] },
-          { participants: [req.userId, toId] }
+          { participants: [toId, req.user.id] },
+          { participants: [req.user.id, toId] }
         ]
       });
 
@@ -37,10 +37,10 @@ module.exports = {
       if (!verifyChat) {
         // Create a chat if not exists and add the message
         await Chats.create({
-          participants: [toId, req.userId],
+          participants: [toId, req.user.id],
           newestMessage: message,
           messages: {
-            sender: req.userId,
+            sender: req.user.id,
             reciver: toId,
             data: message,
             status: "sent",
@@ -50,7 +50,7 @@ module.exports = {
       } else {
         // Add the message to the chat if the chat exists
         const messages = {
-          sender: req.userId,
+          sender: req.user.id,
           reciver: toId,
           data: message,
           status: "sent",

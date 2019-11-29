@@ -3,14 +3,14 @@ const Chats = require("../models/chats");
 module.exports = {
   index: async (req, res) => {
     try {
-      const allChats = await Chats.find({ participants: req.userId })
+      const allChats = await Chats.find({ participants: req.user.id })
         .populate("participants")
         .select("-messages");
 
       // For each chat, get the other user object and create a property called fromUser
       const chats = allChats.map(chat => {
         const [fromUser] = chat.participants.filter(
-          participant => participant._id !== req.userId
+          participant => participant._id !== req.user.id
         );
 
         if (fromUser) {

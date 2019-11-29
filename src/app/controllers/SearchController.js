@@ -26,7 +26,7 @@ module.exports = {
       let decrementUser = 0;
 
       // Verify if the logged user is on the array
-      const users = findUsers.filter(user => user._id !== req.userId);
+      const users = findUsers.filter(user => user._id !== req.user.id);
 
       // If the logged user is on the array add the value 1 to decrement
       if (users.length !== findUsers.length) {
