@@ -1,4 +1,4 @@
-const mongoose = require("../../config/mongodb");
+import mongoose from "../../config/mongodb";
 
 const schema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -11,4 +11,4 @@ const schema = new mongoose.Schema({
   session: { type: Object }
 });
 
-module.exports = mongoose.model("Users", schema);
+export default mongoose.model("Users", schema);

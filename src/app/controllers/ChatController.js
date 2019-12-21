@@ -1,6 +1,6 @@
-const Chats = require("../models/chats");
+import Chats from "../models/chats";
 
-module.exports = {
+export default {
   index: async (req, res) => {
     try {
       const allChats = await Chats.find({ participants: req.user.id })

@@ -1,12 +1,15 @@
-const express = require("express");
+import express from "express";
+import http from "http";
+import socketIo from "socket.io";
+import { errors } from "celebrate";
+import jwt from "./utils/jwt";
+import ioMiddleware from "./app/middlewares/io";
+import routes from "./routes";
+import "dotenv/config";
+
 const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
-const { errors } = require("celebrate");
-const jwt = require("./utils/jwt");
-const ioMiddleware = require("./app/middlewares/io");
-require("dotenv").config();
-const routes = require("./routes");
+const server = http.Server(app);
+const io = socketIo(server);
 
 app.use(express.json());
 app.use(routes);
@@ -44,4 +47,4 @@ const main = async () => {
 
 main();
 
-module.exports = app;
+export default app;

@@ -1,7 +1,9 @@
-const { Joi } = require("celebrate");
-Joi.objectId = require("joi-objectid")(Joi);
+import { Joi } from "celebrate";
+import joiObjectId from "joi-objectid";
 
-module.exports = {
+Joi.objectId = joiObjectId(Joi);
+
+export default {
   index: {
     query: Joi.object().keys({
       page: Joi.number()

@@ -1,6 +1,7 @@
-const mongoose = require("../../config/mongodb");
+import mongoose from "../../config/mongodb";
 
 const messagesSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.ObjectId },
   sender: { type: mongoose.Schema.ObjectId, required: true, ref: "Users" },
   reciver: { type: mongoose.Schema.ObjectId, required: true, ref: "Users" },
   data: { type: String, required: true },
@@ -22,4 +23,4 @@ const schema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Chats", schema);
+export default mongoose.model("Chats", schema);
