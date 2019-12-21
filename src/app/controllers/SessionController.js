@@ -13,7 +13,7 @@ export default {
       const user = await Users.findOne({
         email: email,
         password: passwordHash
-      });
+      }).select("-contacts");
 
       if (!user) {
         return res.status(401).json({ code: "INVALID_CREDENTIALS" });
@@ -21,7 +21,7 @@ export default {
 
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
-      res.json({ jwt: jwtToken });
+      res.json({ user, jwt: jwtToken });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });

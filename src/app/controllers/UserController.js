@@ -22,9 +22,12 @@ export default {
         password: passwordHash
       });
 
+      user.contacts = undefined;
+      user.password = undefined;
+
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
-      res.json({ jwt: jwtToken });
+      res.json({ user, jwt: jwtToken });
     } catch (e) {
       console.log("Error", e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
