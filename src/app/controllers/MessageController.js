@@ -1,8 +1,8 @@
-const Users = require("../models/users");
-const Chats = require("../models/chats");
-const mongoose = require("mongoose");
+import Users from "../models/users";
+import Chats from "../models/chats";
+import mongoose from "mongoose";
 
-module.exports = {
+export default {
   store: async (req, res) => {
     try {
       const { message } = req.body;

@@ -1,6 +1,6 @@
-const Users = require("../models/users");
+import Users from "../models/users";
 
-module.exports = {
+export default {
   index: async (req, res) => {
     try {
       let { searchText, page, limit } = req.query;

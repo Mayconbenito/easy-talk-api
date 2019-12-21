@@ -1,6 +1,6 @@
-const { Joi } = require("celebrate");
+import { Joi } from "celebrate";
 
-module.exports = {
+export default {
   index: {
     query: Joi.object().keys({
       searchText: Joi.string().required(),

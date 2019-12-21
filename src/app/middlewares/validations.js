@@ -1,4 +1,4 @@
-const { check, validationResult } = require("express-validator/check");
+import { check, validationResult } from "express-validator/check";
 
 const validationSchema = {
   login: [
@@ -34,4 +34,4 @@ const validationSchema = {
   }
 };
 
-module.exports = { validationSchema, validationResult };
+export default { validationSchema, validationResult };

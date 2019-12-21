@@ -1,9 +1,9 @@
-const { generateHash } = require("../../utils/crypto");
-const jwt = require("../../utils/jwt");
+import generateHash from "../../utils/crypto";
+import jwt from "../../utils/jwt";
 
-const Users = require("../models/users");
+import Users from "../models/users";
 
-module.exports = {
+export default {
   store: async (req, res) => {
     try {
       const { username, email, password } = req.body;
