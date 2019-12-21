@@ -1,6 +1,6 @@
-const { Joi } = require("celebrate");
+import { Joi } from "celebrate";
 
-module.exports = {
+export default {
   store: {
     body: Joi.object().keys({
       email: Joi.string()

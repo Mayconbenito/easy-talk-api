@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const generateHash = (key, data) =>
   new Promise(resolve => {
@@ -8,6 +8,4 @@ const generateHash = (key, data) =>
     resolve(hexHash);
   });
 
-module.exports = {
-  generateHash: generateHash
-};
+export default generateHash;

@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 const sign = (body, cert) =>
   new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ const verify = (token, cert) =>
     });
   });
 
-module.exports = {
-  sign: sign,
-  verify: verify
+export default {
+  sign,
+  verify
 };
