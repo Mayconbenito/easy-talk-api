@@ -53,4 +53,11 @@ routes.get(
   SearchController.index
 );
 
+routes.get(
+  "/users/:id",
+  auth,
+  celebrate(UserValidator.show),
+  UserController.show
+);
+
 export default routes;
