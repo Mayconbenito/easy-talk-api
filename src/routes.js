@@ -39,6 +39,12 @@ routes.post(
   celebrate(ContactValidator.store),
   ContactController.store
 );
+routes.delete(
+  "/contacts/:id",
+  auth,
+  celebrate(ContactValidator.delete),
+  ContactController.delete
+);
 routes.get(
   "/contacts",
   auth,
