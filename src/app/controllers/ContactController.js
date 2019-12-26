@@ -65,5 +65,27 @@ export default {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
     }
+  },
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const contact = await Users.findById(id);
+      if (!contact) {
+        return res.status(404).json({ code: "USER_NOT_FOUND" });
+      }
+
+      const removeContact = await Users.findOneAndUpdate(
+        { _id: req.user.id },
+        { $pull: { contacts: id } }
+      );
+
+      if (removeContact) {
+        return res.status(204).send();
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    }
   }
 };
