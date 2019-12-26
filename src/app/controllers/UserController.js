@@ -8,16 +8,24 @@ export default {
     try {
       const { id } = req.params;
 
-      const user = await Users.findOne({ _id: id });
+      const loggedUser = await Users.findOne({ _id: req.user.id }).select(
+        "contacts"
+      );
+
+      const user = (
+        await Users.findOne({ _id: id }).select("-contacts -password")
+      ).toJSON();
 
       if (!user) {
         return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
-      user.contacts = undefined;
-      user.password = undefined;
+      const isContact =
+        loggedUser.contacts.length > 0
+          ? !!loggedUser.contacts.find(contact => String(contact._id) === id)
+          : false;
 
-      return res.json({ user });
+      return res.json({ user: { ...user, isContact } });
     } catch (e) {
       console.log("Error", e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
