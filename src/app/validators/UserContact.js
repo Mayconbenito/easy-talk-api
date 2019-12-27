@@ -8,8 +8,12 @@ export default {
     query: Joi.object().keys({
       page: Joi.number()
         .integer()
+        .min(1)
         .required(),
-      limit: Joi.number().integer()
+      limit: Joi.number()
+        .min(1)
+        .max(100)
+        .integer()
     })
   },
   store: {
