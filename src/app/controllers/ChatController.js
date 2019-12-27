@@ -21,11 +21,11 @@ export default {
         }
       });
 
-      const metadata = {
+      const meta = {
         items: chats.length
       };
 
-      return res.json({ metadata, chats });
+      return res.json({ meta, chats });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });

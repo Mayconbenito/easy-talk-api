@@ -3,7 +3,7 @@ import Users from "../models/users";
 export default {
   index: async (req, res) => {
     try {
-      let { searchText, page, limit } = req.query;
+      let { searchText, limit } = req.query;
       limit = parseInt(limit || 10);
 
       const findUsers = await Users.find({
@@ -13,10 +13,9 @@ export default {
         ]
       })
         .select("-contacts -session")
-        .skip(limit * (page - 1))
         .limit(limit);
 
-      const totalItems = await Users.countDocuments({
+      const total = await Users.countDocuments({
         $or: [
           { name: { $regex: new RegExp(searchText, "ig") } },
           { email: searchText }
@@ -33,14 +32,14 @@ export default {
         decrementUser = 1;
       }
 
-      const metadata = {
-        totalItems: totalItems - decrementUser,
+      const meta = {
+        total: total - decrementUser,
         items: users.length,
-        pages: Math.ceil(totalItems / (limit - decrementUser))
+        pages: Math.ceil(total / (limit - decrementUser))
       };
 
       return res.json({
-        metadata,
+        meta,
         users
       });
     } catch (e) {
