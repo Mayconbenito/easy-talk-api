@@ -4,7 +4,7 @@ import { celebrate } from "celebrate";
 import SessionController from "./app/controllers/SessionController";
 import ChatController from "./app/controllers/ChatController";
 import MessageController from "./app/controllers/MessageController";
-import ContactController from "./app/controllers/ContactController";
+import UserContactController from "./app/controllers/UserContactController";
 import SearchController from "./app/controllers/SearchController";
 import UserController from "./app/controllers/UserController";
 
@@ -12,7 +12,7 @@ import auth from "./app/middlewares/auth";
 
 import UserValidator from "./app/validators/User";
 import SessionValidator from "./app/validators/Session";
-import ContactValidator from "./app/validators/Contact";
+import UserContactValidator from "./app/validators/UserContact";
 import MessageValidator from "./app/validators/Message";
 import SearchValidator from "./app/validators/Search";
 
@@ -33,23 +33,23 @@ routes.post(
   MessageController.store
 );
 
+routes.get(
+  "/me/contacts",
+  auth,
+  celebrate(UserContactValidator.index),
+  UserContactController.index
+);
 routes.post(
   "/contacts/:id",
   auth,
-  celebrate(ContactValidator.store),
-  ContactController.store
+  celebrate(UserContactValidator.store),
+  UserContactController.store
 );
 routes.delete(
   "/contacts/:id",
   auth,
-  celebrate(ContactValidator.delete),
-  ContactController.delete
-);
-routes.get(
-  "/contacts",
-  auth,
-  celebrate(ContactValidator.index),
-  ContactController.index
+  celebrate(UserContactValidator.delete),
+  UserContactController.delete
 );
 
 routes.get(

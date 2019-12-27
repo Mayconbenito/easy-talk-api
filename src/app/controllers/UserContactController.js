@@ -28,7 +28,7 @@ export default {
 
       return res.json({
         metadata,
-        users: contacts
+        contacts
       });
     } catch (e) {
       console.log(e);
