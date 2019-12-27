@@ -15,7 +15,7 @@ export default {
         .select("-contacts -session")
         .limit(limit);
 
-      const totalItems = await Users.countDocuments({
+      const total = await Users.countDocuments({
         $or: [
           { name: { $regex: new RegExp(searchText, "ig") } },
           { email: searchText }
@@ -33,9 +33,9 @@ export default {
       }
 
       const meta = {
-        totalItems: totalItems - decrementUser,
+        total: total - decrementUser,
         items: users.length,
-        pages: Math.ceil(totalItems / (limit - decrementUser))
+        pages: Math.ceil(total / (limit - decrementUser))
       };
 
       return res.json({
