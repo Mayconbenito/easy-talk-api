@@ -16,5 +16,10 @@ export default {
     params: Joi.object().keys({
       id: Joi.objectId().required()
     })
+  },
+  delete: {
+    params: Joi.object().keys({
+      id: Joi.objectId().required()
+    })
   }
 };
