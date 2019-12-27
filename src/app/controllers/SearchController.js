@@ -3,7 +3,7 @@ import Users from "../models/users";
 export default {
   index: async (req, res) => {
     try {
-      let { searchText, page, limit } = req.query;
+      let { searchText, limit } = req.query;
       limit = parseInt(limit || 10);
 
       const findUsers = await Users.find({
@@ -13,7 +13,6 @@ export default {
         ]
       })
         .select("-contacts -session")
-        .skip(limit * (page - 1))
         .limit(limit);
 
       const totalItems = await Users.countDocuments({

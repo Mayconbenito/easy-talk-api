@@ -4,10 +4,10 @@ export default {
   index: {
     query: Joi.object().keys({
       searchText: Joi.string().required(),
-      page: Joi.number()
+      limit: Joi.number()
         .integer()
-        .required(),
-      limit: Joi.number().integer()
+        .min(1)
+        .max(100)
     })
   }
 };
