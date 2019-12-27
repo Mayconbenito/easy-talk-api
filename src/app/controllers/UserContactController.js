@@ -20,14 +20,14 @@ export default {
 
       const totalItems = await Users.countDocuments({ _id: req.user.id });
 
-      const metadata = {
+      const meta = {
         totalItems: totalItems,
         items: contacts.length,
         pages: Math.ceil(totalItems / limit)
       };
 
       return res.json({
-        metadata,
+        meta,
         contacts
       });
     } catch (e) {

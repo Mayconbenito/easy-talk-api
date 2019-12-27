@@ -32,14 +32,14 @@ export default {
         decrementUser = 1;
       }
 
-      const metadata = {
+      const meta = {
         totalItems: totalItems - decrementUser,
         items: users.length,
         pages: Math.ceil(totalItems / (limit - decrementUser))
       };
 
       return res.json({
-        metadata,
+        meta,
         users
       });
     } catch (e) {
