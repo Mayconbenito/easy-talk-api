@@ -27,7 +27,7 @@ routes.post("/register", celebrate(UserValidator.store), UserController.store);
 
 routes.get("/chats", auth, ChatController.index);
 routes.post(
-  "/messages/:toId",
+  "/messages/:reciverId",
   auth,
   celebrate(MessageValidator.store),
   MessageController.store
