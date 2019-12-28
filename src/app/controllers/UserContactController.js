@@ -6,11 +6,14 @@ export default {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
 
-      const { contacts } = await Users.findById(req.user.id)
+      const user = await Users.findById(req.user.id)
         .populate("contacts")
         .select("-_id +contacts")
         .skip(limit * (page - 1))
         .limit(limit);
+
+      const contacts =
+        user && user.contacts && user.contacts.length > 0 ? user.contacts : [];
 
       contacts.map(contact => {
         contact.contacts = undefined;
