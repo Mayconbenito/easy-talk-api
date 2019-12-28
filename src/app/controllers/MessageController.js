@@ -16,17 +16,6 @@ export default {
 
       const fromUser = await Users.findById(req.user.id);
 
-      if (verifyReciver.session && verifyReciver.session.status === "online") {
-        req.io.to(verifyReciver.session.socketId).emit("message", {
-          message: message,
-          dateTime: new Date(),
-          from: {
-            id: fromUser._id,
-            username: fromUser.name
-          }
-        });
-      }
-
       const verifyChat = await Chats.findOne({
         $or: [
           { participants: [toId, req.user.id] },
@@ -52,6 +41,21 @@ export default {
           messages
         });
 
+        if (
+          verifyReciver.session &&
+          verifyReciver.session.status === "online"
+        ) {
+          req.io.to(verifyReciver.session.socketId).emit("message", {
+            chat: { _id: chat._id, participants: chat.participants },
+            message: message,
+            dateTime: new Date(),
+            from: {
+              id: fromUser._id,
+              username: fromUser.name
+            }
+          });
+        }
+
         return res.json({
           chat: { _id: chat._id, participants: chat.participants },
           message: messages
@@ -71,6 +75,21 @@ export default {
           { _id: verifyChat._id },
           { newestMessage: message, $push: { messages: messages } }
         ).select("_id participants");
+
+        if (
+          verifyReciver.session &&
+          verifyReciver.session.status === "online"
+        ) {
+          req.io.to(verifyReciver.session.socketId).emit("message", {
+            chat,
+            message: message,
+            dateTime: new Date(),
+            from: {
+              id: fromUser._id,
+              username: fromUser.name
+            }
+          });
+        }
 
         return res.json({
           chat,
