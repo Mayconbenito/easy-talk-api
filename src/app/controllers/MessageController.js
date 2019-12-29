@@ -6,75 +6,72 @@ export default {
   store: async (req, res) => {
     try {
       const { message } = req.body;
-      const { toId } = req.params;
+      const { reciverId } = req.params;
 
-      const verifyReciver = await Users.findById(toId);
+      const reciver = await Users.findById(reciverId);
 
-      if (!verifyReciver) {
+      if (!reciver) {
         return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
-      const fromUser = await Users.findById(req.user.id);
+      const senderUser = await Users.findById(req.user.id).select("name");
 
-      if (verifyReciver.session && verifyReciver.session.status === "online") {
-        req.io.to(verifyReciver.session.socketId).emit("message", {
-          message: message,
-          dateTime: new Date(),
-          from: {
-            id: fromUser._id,
-            username: fromUser.name
-          }
-        });
-      }
-
-      const verifyChat = await Chats.findOne({
+      const chat = await Chats.findOne({
         $or: [
-          { participants: [toId, req.user.id] },
-          { participants: [req.user.id, toId] }
+          { participants: [reciverId, req.user.id] },
+          { participants: [req.user.id, reciverId] }
         ]
       }).select("_id");
 
-      // Verify if the chats exists
-      if (!verifyChat) {
-        // Create a chat if not exists and add the message
-        const messages = {
-          _id: mongoose.Types.ObjectId(),
-          sender: req.user.id,
-          reciver: toId,
-          data: message,
-          status: "sent",
-          type: "text"
-        };
+      const messageObj = {
+        _id: mongoose.Types.ObjectId(),
+        senderId: req.user.id,
+        reciverId,
+        data: message,
+        status: "sent",
+        type: "text"
+      };
 
+      if (!chat) {
+        // Create chat and add the message
         const chat = await Chats.create({
-          participants: [toId, req.user.id],
-          newestMessage: message,
-          messages
+          participants: [reciverId, req.user.id],
+          lastSentMessage: message,
+          messages: messageObj
         });
 
+        if (reciver.session && reciver.session.status === "online") {
+          req.io.to(reciver.session.socketId).emit("message", {
+            chat: { participants: chat.participants, _id: chat._id },
+            message,
+            sender: senderUser,
+            timestamp: new Date()
+          });
+        }
+
         return res.json({
-          chat: { _id: chat._id, participants: chat.participants },
-          message: messages
+          chat: { participants: chat.participants, _id: chat._id },
+          message: messageObj
         });
       } else {
-        // Add the message to the chat if the chat exists
-        const messages = {
-          _id: mongoose.Types.ObjectId(),
-          sender: req.user.id,
-          reciver: toId,
-          data: message,
-          status: "sent",
-          type: "text"
-        };
-
-        const chat = await Chats.findOneAndUpdate(
-          { _id: verifyChat._id },
-          { newestMessage: message, $push: { messages: messages } }
+        // Add the message to the chat if the chat already exists
+        const updatedChat = await Chats.findOneAndUpdate(
+          { _id: chat._id },
+          { lastSentMessage: message, $push: { messages: messageObj } }
         ).select("_id participants");
 
+        if (reciver.session && reciver.session.status === "online") {
+          req.io.to(reciver.session.socketId).emit("message", {
+            chat: updatedChat,
+            message,
+            sender: senderUser,
+            timestamp: new Date()
+          });
+        }
+
         return res.json({
-          chat,
-          message: messages
+          chat: updatedChat,
+          message: messageObj
         });
       }
     } catch (e) {

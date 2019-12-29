@@ -7,18 +7,16 @@ export default {
         .populate("participants")
         .select("-messages");
 
-      // For each chat, get the other user object and create a property called fromUser
+      // For each chat, get the other user object and create a property called sender
       const chats = allChats.map(chat => {
-        const [fromUser] = chat.participants.filter(
+        const [sender] = chat.participants.filter(
           participant => participant._id !== req.user.id
         );
 
-        if (fromUser) {
-          chat.participants = undefined;
-          fromUser.contacts = undefined;
+        chat.participants = undefined;
+        sender.contacts = undefined;
 
-          return { ...chat.toObject(), fromUser: { ...fromUser.toObject() } };
-        }
+        return { ...chat.toJSON(), sender };
       });
 
       const meta = {
