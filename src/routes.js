@@ -4,6 +4,7 @@ import { celebrate } from "celebrate";
 import SessionController from "./app/controllers/SessionController";
 import ChatController from "./app/controllers/ChatController";
 import MessageController from "./app/controllers/MessageController";
+import ChatMessageController from "./app/controllers/ChatMessageController";
 import UserContactController from "./app/controllers/UserContactController";
 import SearchController from "./app/controllers/SearchController";
 import UserController from "./app/controllers/UserController";
@@ -14,6 +15,7 @@ import UserValidator from "./app/validators/User";
 import SessionValidator from "./app/validators/Session";
 import UserContactValidator from "./app/validators/UserContact";
 import MessageValidator from "./app/validators/Message";
+import ChatMessageValidator from "./app/validators/ChatMessage";
 import SearchValidator from "./app/validators/Search";
 
 const routes = express.Router();
@@ -26,6 +28,13 @@ routes.post(
 routes.post("/register", celebrate(UserValidator.store), UserController.store);
 
 routes.get("/chats", auth, ChatController.index);
+routes.get(
+  "/chats/:chatId/messages",
+  auth,
+  celebrate(ChatMessageValidator.index),
+  ChatMessageController.index
+);
+
 routes.post(
   "/messages/:reciverId",
   auth,
