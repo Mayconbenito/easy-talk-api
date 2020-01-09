@@ -38,12 +38,21 @@ export default {
         }
       ]);
 
+      const total = await Chats.aggregate([
+        { $project: { _id: 1, count: { $size: "$messages" } } }
+      ]);
+
       const messages = chat.messages.slice(
         limit * page - limit,
-        limit * page + limit
+        limit * page + limit - limit
       );
 
-      return res.json({ messages });
+      const meta = {
+        total: total[0].count,
+        items: messages.length
+      };
+
+      return res.json({ meta, messages });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
