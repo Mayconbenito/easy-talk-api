@@ -39,7 +39,12 @@ export default {
       ]);
 
       const total = await Chats.aggregate([
-        { $project: { _id: 1, count: { $size: "$messages" } } }
+        {
+          $match: {
+            _id: new mongoose.mongo.ObjectId(chatId)
+          }
+        },
+        { $project: { count: { $size: "$messages" } } }
       ]);
 
       const messages = chat.messages.slice(
