@@ -13,7 +13,9 @@ export default {
           participant => participant._id !== req.user.id
         );
 
-        chat.participants = undefined;
+        chat.participants = chat.participants.map(
+          participant => participant._id
+        );
         sender.contacts = undefined;
 
         return { ...chat.toJSON(), sender };
