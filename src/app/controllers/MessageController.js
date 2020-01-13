@@ -14,7 +14,7 @@ export default {
         return res.status(404).json({ code: "USER_NOT_FOUND" });
       }
 
-      const senderUser = await Users.findById(req.user.id).select("name");
+      const senderUser = await Users.findById(req.user.id).select("-contacts");
 
       const chat = await Chats.findOne({
         $or: [
@@ -49,8 +49,10 @@ export default {
           });
         }
 
+        chat.messages = undefined;
+
         return res.json({
-          chat: { participants: chat.participants, _id: chat._id },
+          chat: { ...chat.toJSON(), sender: senderUser },
           message: messageObj
         });
       } else {
@@ -58,7 +60,7 @@ export default {
         const updatedChat = await Chats.findOneAndUpdate(
           { _id: chat._id },
           { lastSentMessage: message, $push: { messages: messageObj } }
-        ).select("_id participants");
+        ).select("-messages");
 
         if (reciver.session && reciver.session.status === "online") {
           req.io.to(reciver.session.socketId).emit("message", {
@@ -70,7 +72,7 @@ export default {
         }
 
         return res.json({
-          chat: updatedChat,
+          chat: { ...updatedChat.toJSON(), sender: senderUser },
           message: messageObj
         });
       }
