@@ -10,11 +10,11 @@ export default {
           { participants: [participants[0], req.user.id] },
           { participants: [req.user.id, participants[0]] }
         ]
-      }).select("_id");
+      }).select("-messages");
 
       if (chat) {
-        return res.status(400).json({
-          code: "CHAT_ALREADY_EXISTS"
+        return res.json({
+          chat
         });
       }
 
