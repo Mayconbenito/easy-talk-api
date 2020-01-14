@@ -1,6 +1,35 @@
 import Chats from "../models/chats";
 
 export default {
+  store: async (req, res) => {
+    try {
+      const { participants } = req.body;
+
+      const chat = await Chats.findOne({
+        $or: [
+          { participants: [participants[0], req.user.id] },
+          { participants: [req.user.id, participants[0]] }
+        ]
+      }).select("_id");
+
+      if (chat) {
+        return res.status(400).json({
+          code: "CHAT_ALREADY_EXISTS"
+        });
+      }
+
+      const createdChat = await Chats.create({
+        participants: [participants[0], req.user.id]
+      });
+
+      createdChat.messages = undefined;
+
+      return res.json({ chat: createdChat });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    }
+  },
   index: async (req, res) => {
     try {
       const allChats = await Chats.find({ participants: req.user.id })

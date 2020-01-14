@@ -15,6 +15,7 @@ import UserValidator from "./app/validators/User";
 import SessionValidator from "./app/validators/Session";
 import UserContactValidator from "./app/validators/UserContact";
 import MessageValidator from "./app/validators/Message";
+import ChatValidator from "./app/validators/Chat";
 import ChatMessageValidator from "./app/validators/ChatMessage";
 import SearchValidator from "./app/validators/Search";
 
@@ -27,6 +28,12 @@ routes.post(
 );
 routes.post("/register", celebrate(UserValidator.store), UserController.store);
 
+routes.post(
+  "/chats",
+  auth,
+  celebrate(ChatValidator.store),
+  ChatController.store
+);
 routes.get("/me/chats", auth, ChatController.index);
 routes.get(
   "/chats/:chatId/messages",
