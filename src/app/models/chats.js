@@ -18,7 +18,7 @@ const schema = new mongoose.Schema({
   participants: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
   ],
-  lastSentMessage: { type: String, required: true },
+  lastSentMessage: { type: String },
   messages: [messagesSchema],
   createdAt: { type: Date, default: Date.now }
 });
