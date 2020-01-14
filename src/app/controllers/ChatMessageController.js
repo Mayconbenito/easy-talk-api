@@ -47,10 +47,12 @@ export default {
         { $project: { count: { $size: "$messages" } } }
       ]);
 
-      const messages = chat.messages.slice(
-        limit * page - limit,
-        limit * page + limit - limit
-      );
+      const messages = chat
+        ? chat.messages.slice(
+            limit * page - limit,
+            limit * page + limit - limit
+          )
+        : [];
 
       const meta = {
         total: total[0].count,
