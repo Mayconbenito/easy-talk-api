@@ -20,8 +20,19 @@ export default {
       }
 
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
+      const wsToken = await jwt.sign(
+        { id: user._id, type: "WS" },
+        process.env.JWT_HASH
+      );
 
-      res.json({ user, jwt: jwtToken });
+      await Users.updateOne(
+        { _id: user._id },
+        {
+          ws: { token: wsToken, createdAt: Date.now() }
+        }
+      );
+
+      res.json({ user, jwt: jwtToken, wsToken });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });

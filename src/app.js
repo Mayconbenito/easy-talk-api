@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import socketIo from "socket.io";
 import { errors } from "celebrate";
-import jwt from "./utils/jwt";
+
 import ioMiddleware from "./app/middlewares/io";
 import routes from "./routes";
 import "dotenv/config";
@@ -26,20 +26,26 @@ const main = async () => {
   io.use(ioMiddleware);
 
   io.on("connection", async socket => {
-    const token = socket.handshake.query.jwt;
-
-    const { id: userId } = await jwt.verify(token, process.env.JWT_HASH);
-    // When the socket connect set the user status to online
+    const token = socket.token;
+    // When the socket connect set the socket status to active
     await Users.findOneAndUpdate(
-      { _id: userId },
-      { session: { socketId: socket.id, status: "online" } }
+      { ws: { token } },
+      {
+        ws: {
+          socket: { id: socket.id, createdAt: Date.now(), status: "active" }
+        }
+      }
     );
 
     socket.on("disconnect", async () => {
-      // When the socket disconnect set the user status to offline
+      // When the socket disconnect set the socket status to unactive
       await Users.findOneAndUpdate(
-        { _id: userId },
-        { session: { socketId: socket.id, status: "offline" } }
+        { ws: { socket: socket.id } },
+        {
+          ws: {
+            socket: { id: socket.id, createdAt: Date.now(), status: "unactive" }
+          }
+        }
       );
     });
   });
@@ -47,4 +53,4 @@ const main = async () => {
 
 main();
 
-export default app;
+export { server, app };

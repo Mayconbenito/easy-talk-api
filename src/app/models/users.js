@@ -1,5 +1,15 @@
 import mongoose from "../../config/mongodb";
 
+const wsSchema = new mongoose.Schema({
+  type: Object,
+  token: String,
+  socket: {
+    id: String,
+    createdAt: Date
+  },
+  createdAt: Date
+});
+
 const schema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -8,7 +18,7 @@ const schema = new mongoose.Schema({
   contacts: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
   ],
-  session: { type: Object }
+  ws: { type: wsSchema, select: false }
 });
 
 export default mongoose.model("Users", schema);
