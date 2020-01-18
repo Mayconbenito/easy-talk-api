@@ -49,6 +49,7 @@ routes.post(
   MessageController.store
 );
 
+routes.get("/me", auth, UserController.show);
 routes.get(
   "/me/contacts",
   auth,
