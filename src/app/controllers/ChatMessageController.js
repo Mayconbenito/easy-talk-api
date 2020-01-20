@@ -8,6 +8,16 @@ export default {
       limit = parseInt(limit || 10);
       const { chatId } = req.params;
 
+      const findChat = await Chats.findOne({
+        _id: chatId
+      }).select("_id");
+
+      if (!findChat) {
+        return res.status(404).json({
+          code: "CHAT_NOT_EXISTS"
+        });
+      }
+
       const [chat] = await Chats.aggregate([
         {
           $match: {
