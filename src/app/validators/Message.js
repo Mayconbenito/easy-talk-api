@@ -9,7 +9,7 @@ export default {
       message: Joi.string().required()
     }),
     params: Joi.object().keys({
-      reciverId: Joi.objectId().required()
+      chatId: Joi.objectId().required()
     })
   }
 };

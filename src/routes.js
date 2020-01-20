@@ -43,7 +43,7 @@ routes.get(
 );
 
 routes.post(
-  "/messages/:reciverId",
+  "/messages/:chatId",
   auth,
   celebrate(MessageValidator.store),
   MessageController.store
