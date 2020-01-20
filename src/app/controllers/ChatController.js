@@ -37,18 +37,20 @@ export default {
         .select("-messages");
 
       // For each chat, get the other user object and create a property called sender
-      const chats = allChats.map(chat => {
-        const [sender] = chat.participants.filter(
-          participant => participant._id !== req.user.id
-        );
+      const chats = allChats
+        .filter(chat => chat.messagesCount > 0)
+        .map(chat => {
+          const [sender] = chat.participants.filter(
+            participant => participant._id !== req.user.id
+          );
 
-        chat.participants = chat.participants.map(
-          participant => participant._id
-        );
-        sender.contacts = undefined;
+          chat.participants = chat.participants.map(
+            participant => participant._id
+          );
+          sender.contacts = undefined;
 
-        return { ...chat.toJSON(), sender };
-      });
+          return { ...chat.toJSON(), sender };
+        });
 
       const meta = {
         items: chats.length

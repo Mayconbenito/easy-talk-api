@@ -41,12 +41,21 @@ export default {
 
       await Chats.updateOne(
         { _id: chat._id },
-        { lastSentMessage: message, $push: { messages: messageObj } }
+        {
+          lastSentMessage: message,
+          $push: { messages: messageObj },
+          $inc: { messagesCount: 1 }
+        }
       ).select("-messages");
 
       if (reciver.session && reciver.session.status === "online") {
         req.io.to(reciver.session.socketId).emit("message", {
-          chat: { ...chat.toJSON(), lastSentMessage: messageObj.data, sender },
+          chat: {
+            ...chat.toJSON(),
+            messagesCount: chat.messagesCount + 1,
+            lastSentMessage: messageObj.data,
+            sender
+          },
           message,
           sender,
           timestamp: new Date()
@@ -54,7 +63,12 @@ export default {
       }
 
       return res.json({
-        chat: { ...chat.toJSON(), lastSentMessage: messageObj.data, sender },
+        chat: {
+          ...chat.toJSON(),
+          messagesCount: chat.messagesCount + 1,
+          lastSentMessage: messageObj.data,
+          sender
+        },
         message: messageObj
       });
     } catch (e) {
