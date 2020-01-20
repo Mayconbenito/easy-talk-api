@@ -12,7 +12,7 @@ const wsSchema = new mongoose.Schema({
 
 const schema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, select: false },
   password: { type: String, required: true, select: false },
   createdAt: { type: Date, default: Date.now },
   contacts: [
