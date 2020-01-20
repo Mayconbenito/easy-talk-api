@@ -25,7 +25,7 @@ export default {
             ? !!loggedUser.contacts.find(contact => String(contact._id) === id)
             : false;
 
-        return res.json({ user: { ...user.toJSON() }, isContact });
+        return res.json({ user: { ...user.toJSON(), isContact } });
       }
     } catch (e) {
       console.log("Error", e);
