@@ -13,7 +13,7 @@ export default {
       const user = await Users.findOne({
         email: email,
         password: passwordHash
-      }).select("-contacts");
+      }).select("-contacts +email");
 
       if (!user) {
         return res.status(401).json({ code: "INVALID_CREDENTIALS" });
