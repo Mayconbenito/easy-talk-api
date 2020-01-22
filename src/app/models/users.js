@@ -5,7 +5,8 @@ const wsSchema = new mongoose.Schema({
   token: String,
   socket: {
     id: String,
-    createdAt: Date
+    createdAt: { type: Date, default: Date.now },
+    status: { type: String, default: "inactive" }
   },
   createdAt: Date
 });

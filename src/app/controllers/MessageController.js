@@ -2,6 +2,8 @@ import Users from "../models/users";
 import Chats from "../models/chats";
 import mongoose from "mongoose";
 
+import { sendMessage } from "../../utils/websocket";
+
 export default {
   store: async (req, res) => {
     try {
@@ -48,19 +50,15 @@ export default {
         }
       ).select("-messages");
 
-      if (reciver.session && reciver.session.status === "online") {
-        req.io.to(reciver.session.socketId).emit("message", {
-          chat: {
-            ...chat.toJSON(),
-            messagesCount: chat.messagesCount + 1,
-            lastSentMessage: messageObj.data,
-            sender
-          },
-          message,
-          sender,
-          timestamp: new Date()
-        });
-      }
+      sendMessage(reciver._id, {
+        chat: {
+          ...chat.toJSON(),
+          messagesCount: chat.messagesCount + 1,
+          lastSentMessage: messageObj.data,
+          sender
+        },
+        message: messageObj
+      });
 
       return res.json({
         chat: {

@@ -7,13 +7,13 @@ export default async (socket, next) => {
     return next(new Error("NO_TOKEN_PROVIDED"));
   }
 
-  jwt.verify(token, process.env.JWT_HASH, (err, decoded) => {
-    if (err) {
-      return next(new Error("INVALID_TOKEN"));
-    }
+  try {
+    const decoded = await jwt.verify(token, process.env.JWT_HASH);
+    socket.session = { token, decoded };
 
-    socket.token = { token, decoded };
-
-    return next();
-  });
+    next();
+  } catch (err) {
+    console.log(err);
+    return next(new Error("INVALID_TOKEN"));
+  }
 };
