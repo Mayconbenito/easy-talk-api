@@ -3,7 +3,6 @@ import { celebrate } from "celebrate";
 
 import SessionController from "./app/controllers/SessionController";
 import ChatController from "./app/controllers/ChatController";
-import MessageController from "./app/controllers/MessageController";
 import ChatMessageController from "./app/controllers/ChatMessageController";
 import UserContactController from "./app/controllers/UserContactController";
 import SearchController from "./app/controllers/SearchController";
@@ -14,7 +13,6 @@ import auth from "./app/middlewares/auth";
 import UserValidator from "./app/validators/User";
 import SessionValidator from "./app/validators/Session";
 import UserContactValidator from "./app/validators/UserContact";
-import MessageValidator from "./app/validators/Message";
 import ChatValidator from "./app/validators/Chat";
 import ChatMessageValidator from "./app/validators/ChatMessage";
 import SearchValidator from "./app/validators/Search";
@@ -43,10 +41,10 @@ routes.get(
 );
 
 routes.post(
-  "/messages/:chatId",
+  "/chats/:chatId/messages",
   auth,
-  celebrate(MessageValidator.store),
-  MessageController.store
+  celebrate(ChatMessageValidator.store),
+  ChatMessageController.store
 );
 
 routes.get("/me", auth, UserController.show);
