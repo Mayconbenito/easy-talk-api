@@ -3,7 +3,6 @@ import Users from "../models/users";
 import Messages from "../models/messages";
 
 import { sendMessage } from "../../utils/websocket";
-
 import mongoose from "mongoose";
 
 export default {
