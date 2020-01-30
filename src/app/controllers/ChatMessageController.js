@@ -92,7 +92,9 @@ export default {
             path: "messages",
             model: "Messages",
             options: {
-              sort: {},
+              sort: {
+                createdAt: -1
+              },
               skip: limit * page - limit,
               limit
             }
