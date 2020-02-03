@@ -62,8 +62,6 @@ export default {
             participant => participant._id
           );
 
-          user.contacts = undefined;
-
           return { ...chat, user };
         });
 
