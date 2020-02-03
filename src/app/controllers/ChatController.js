@@ -5,10 +5,15 @@ export default {
     try {
       const { participants } = req.body;
 
+      // remove the logged user from the array
+      const filtredParticipants = participants.filter(
+        item => item !== req.user.id
+      );
+
       const chat = await Chats.findOne({
         $or: [
-          { participants: [participants[0], req.user.id] },
-          { participants: [req.user.id, participants[0]] }
+          { participants: [filtredParticipants[0], req.user.id] },
+          { participants: [req.user.id, filtredParticipants[0]] }
         ]
       }).select("-messages");
 
@@ -18,13 +23,19 @@ export default {
         });
       }
 
-      const createdChat = await Chats.create({
-        participants: [participants[0], req.user.id]
+      if (!filtredParticipants.length > 0) {
+        return res.status(400).json({
+          code: "NOT_ENOUGH_PARTICIPANTS"
+        });
+      }
+
+      const createChat = await Chats.create({
+        participants: [filtredParticipants[0], req.user.id]
       });
 
-      createdChat.messages = undefined;
+      createChat.messages = undefined;
 
-      return res.json({ chat: createdChat });
+      return res.json({ chat: createChat });
     } catch (e) {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
