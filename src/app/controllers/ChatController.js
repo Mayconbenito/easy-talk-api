@@ -32,24 +32,28 @@ export default {
   },
   index: async (req, res) => {
     try {
-      const allChats = await Chats.find({ participants: req.user.id })
-        .populate("participants")
-        .select("-messages");
+      const allChats = await Chats.find({
+        participants: req.user.id
+      })
+        .populate({ path: "participants", select: "-contacts" })
+        .select("-messages")
+        .lean();
 
-      // For each chat, get the other user object and create a property called sender
+      // For each chat, get the other participant object and create a property called user
       const chats = allChats
         .filter(chat => chat.messagesCount > 0)
         .map(chat => {
-          const [sender] = chat.participants.filter(
-            participant => participant._id !== req.user.id
+          const [user] = chat.participants.filter(
+            participant => String(participant._id) !== req.user.id
           );
 
           chat.participants = chat.participants.map(
             participant => participant._id
           );
-          sender.contacts = undefined;
 
-          return { ...chat.toJSON(), sender };
+          user.contacts = undefined;
+
+          return { ...chat, user };
         });
 
       const meta = {

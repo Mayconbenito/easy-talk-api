@@ -21,8 +21,6 @@ export default {
         });
       }
 
-      const sender = await Users.findById(req.user.id).select("-contacts");
-
       const [reciverId] = chat.participants.filter(
         participant => participant.toJSON() !== req.user.id
       );
@@ -58,7 +56,7 @@ export default {
           ...chat.toJSON(),
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
-          sender
+          user: reciver
         },
         message: messageObj
       });
@@ -68,7 +66,7 @@ export default {
           ...chat.toJSON(),
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
-          sender
+          user: reciver
         },
         message: messageObj
       });
