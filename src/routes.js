@@ -7,8 +7,10 @@ import ChatMessageController from "./app/controllers/ChatMessageController";
 import UserContactController from "./app/controllers/UserContactController";
 import SearchController from "./app/controllers/SearchController";
 import UserController from "./app/controllers/UserController";
+import UserProfilePicture from "./app/controllers/UserProfilePicture";
 
 import auth from "./app/middlewares/auth";
+import uploadFile from "./app/middlewares/uploadFile";
 
 import UserValidator from "./app/validators/User";
 import SessionValidator from "./app/validators/Session";
@@ -54,6 +56,8 @@ routes.get(
   celebrate(UserContactValidator.index),
   UserContactController.index
 );
+routes.put("/me/profile-picture", uploadFile, auth, UserProfilePicture.put);
+
 routes.post(
   "/contacts/:id",
   auth,

@@ -15,6 +15,10 @@ const schema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, select: false },
   password: { type: String, required: true, select: false },
+  picture: {
+    type: Object,
+    default: null
+  },
   createdAt: { type: Date, default: Date.now },
   contacts: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
