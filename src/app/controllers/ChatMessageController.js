@@ -13,7 +13,9 @@ export default {
 
       const chat = await Chats.findOne({
         _id: chatId
-      }).select("-messages");
+      })
+        .select("-messages")
+        .lean();
 
       if (!chat) {
         return res.status(404).json({
@@ -22,7 +24,7 @@ export default {
       }
 
       const [reciverId] = chat.participants.filter(
-        participant => participant.toJSON() !== req.user.id
+        participant => String(participant) !== req.user.id
       );
 
       const reciver = await Users.findById(reciverId).select("-contacts");
@@ -53,7 +55,7 @@ export default {
 
       sendMessage(reciver._id, {
         chat: {
-          ...chat.toJSON(),
+          ...chat,
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
           user: reciver
@@ -63,7 +65,7 @@ export default {
 
       return res.json({
         chat: {
-          ...chat.toJSON(),
+          ...chat,
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
           user: reciver

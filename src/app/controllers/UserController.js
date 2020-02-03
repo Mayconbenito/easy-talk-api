@@ -14,7 +14,9 @@ export default {
         loggedUser.contacts = undefined;
         return res.json({ user: loggedUser });
       } else {
-        const user = await Users.findOne({ _id: id }).select("-contacts");
+        const user = await Users.findOne({ _id: id })
+          .select("-contacts")
+          .lean();
 
         if (!user) {
           return res.status(404).json({ code: "USER_NOT_FOUND" });
@@ -25,7 +27,7 @@ export default {
             ? !!loggedUser.contacts.find(contact => String(contact._id) === id)
             : false;
 
-        return res.json({ user: { ...user.toJSON(), isContact } });
+        return res.json({ user: { ...user, isContact } });
       }
     } catch (e) {
       console.log("Error", e);
