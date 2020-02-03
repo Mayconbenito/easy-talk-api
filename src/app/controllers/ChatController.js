@@ -40,16 +40,16 @@ export default {
       const chats = allChats
         .filter(chat => chat.messagesCount > 0)
         .map(chat => {
-          const [sender] = chat.participants.filter(
+          const [user] = chat.participants.filter(
             participant => participant._id !== req.user.id
           );
 
           chat.participants = chat.participants.map(
             participant => participant._id
           );
-          sender.contacts = undefined;
+          user.contacts = undefined;
 
-          return { ...chat.toJSON(), sender };
+          return { ...chat.toJSON(), user };
         });
 
       const meta = {
