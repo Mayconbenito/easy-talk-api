@@ -1,4 +1,6 @@
 import Users from "../models/users";
+import cloudinary from "cloudinary";
+import { promisify } from "util";
 
 export default {
   put: async (req, res) => {
@@ -14,12 +16,24 @@ export default {
 
       const { secure_url: secureURL, width, height } = req.file;
 
+      let user = await Users.findById(req.user.id).select("picture");
+
+      // delete old image from cloudinary
+      if (user.picture) {
+        const splitedUrl = user.picture.url.split("/");
+        const [imagePublicId] = splitedUrl[splitedUrl.length - 1].split(".");
+
+        await promisify(cloudinary.v2.uploader.destroy)(
+          `images/${imagePublicId}`
+        );
+      }
+
       await Users.updateOne(
         { _id: req.user.id },
         { picture: { url: secureURL, width, height } }
       );
 
-      const user = await Users.findById(req.user.id);
+      user = await Users.findById(req.user.id);
 
       return res.json({ user });
     } catch (e) {
