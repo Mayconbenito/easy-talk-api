@@ -10,7 +10,8 @@ export default {
         $or: [
           { name: { $regex: new RegExp(searchText, "ig") } },
           { email: searchText }
-        ]
+        ],
+        _id: { $ne: req.user.id }
       })
         .select("-contacts -session")
         .limit(limit);
@@ -19,7 +20,8 @@ export default {
         $or: [
           { name: { $regex: new RegExp(searchText, "ig") } },
           { email: searchText }
-        ]
+        ],
+        _id: { $ne: req.user.id }
       });
 
       let decrementUser = 0;
