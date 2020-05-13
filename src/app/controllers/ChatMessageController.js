@@ -8,23 +8,31 @@ import mongoose from "mongoose";
 export default {
   store: async (req, res) => {
     try {
-      const { message } = req.body;
+      const { _id, message } = req.body;
       const { chatId } = req.params;
 
+      const checkMessageIdExistence = await Messages.findById(_id);
+
+      if (checkMessageIdExistence) {
+        return res.status(400).json({
+          code: "ID_ALREADY_EXISTS",
+        });
+      }
+
       const chat = await Chats.findOne({
-        _id: chatId
+        _id: chatId,
       })
         .select("-messages")
         .lean();
 
       if (!chat) {
         return res.status(404).json({
-          code: "CHAT_NOT_EXISTS"
+          code: "CHAT_NOT_EXISTS",
         });
       }
 
       const [reciverId] = chat.participants.filter(
-        participant => String(participant) !== req.user.id
+        (participant) => String(participant) !== req.user.id
       );
 
       const reciver = await Users.findById(reciverId).select("-contacts");
@@ -34,12 +42,12 @@ export default {
       }
 
       const messageObj = {
-        _id: mongoose.Types.ObjectId(),
+        _id: _id || mongoose.Types.ObjectId(),
         senderId: req.user.id,
         reciverId,
         data: message,
         status: "sent",
-        type: "text"
+        type: "text",
       };
 
       const createdMessage = await Messages.create(messageObj);
@@ -49,7 +57,7 @@ export default {
         {
           lastSentMessage: message,
           $push: { messages: createdMessage._id },
-          $inc: { messagesCount: 1 }
+          $inc: { messagesCount: 1 },
         }
       ).select("-messages");
 
@@ -58,9 +66,9 @@ export default {
           ...chat,
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
-          user: reciver
+          user: reciver,
         },
-        message: messageObj
+        message: messageObj,
       });
 
       return res.json({
@@ -68,9 +76,9 @@ export default {
           ...chat,
           messagesCount: chat.messagesCount + 1,
           lastSentMessage: messageObj.data,
-          user: reciver
+          user: reciver,
         },
-        message: messageObj
+        message: messageObj,
       });
     } catch (e) {
       console.log(e);
@@ -84,7 +92,7 @@ export default {
       const { chatId } = req.params;
 
       const chat = await Chats.findOne({
-        _id: chatId
+        _id: chatId,
       })
         .select("_id messages messagesCount")
         .populate([
@@ -93,23 +101,23 @@ export default {
             model: "Messages",
             options: {
               sort: {
-                createdAt: -1
+                createdAt: -1,
               },
               skip: limit * page - limit,
-              limit
-            }
-          }
+              limit,
+            },
+          },
         ]);
 
       if (!chat) {
         return res.status(404).json({
-          code: "CHAT_NOT_EXISTS"
+          code: "CHAT_NOT_EXISTS",
         });
       }
 
       const meta = {
         total: chat.messagesCount,
-        items: chat.messages.length
+        items: chat.messages.length,
       };
 
       return res.json({ meta, messages: chat.messages });
@@ -117,5 +125,5 @@ export default {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
     }
-  }
+  },
 };

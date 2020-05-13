@@ -3,6 +3,7 @@
   "rules": {
     "no-var": "warn",
     "semi": "off",
-    "quotes": ["warn", "double"]
+    "quotes": ["warn", "double"],
+    "comma-dangle": "off"
   }
 }
