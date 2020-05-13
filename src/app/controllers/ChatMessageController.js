@@ -98,7 +98,7 @@ export default {
         .populate([
           {
             path: "messages",
-            model: "Messages",
+            model: "Message",
             options: {
               sort: {
                 createdAt: -1,
