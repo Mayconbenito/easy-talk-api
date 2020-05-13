@@ -1,6 +1,6 @@
-import Chats from "../models/chats";
-import Users from "../models/users";
-import Messages from "../models/messages";
+import Chat from "../models/Chat";
+import User from "../models/User";
+import Message from "../models/Message";
 
 import { sendMessage } from "../../utils/websocket";
 import mongoose from "mongoose";
@@ -11,7 +11,7 @@ export default {
       const { _id, message } = req.body;
       const { chatId } = req.params;
 
-      const checkMessageIdExistence = await Messages.findById(_id);
+      const checkMessageIdExistence = await Message.findById(_id);
 
       if (checkMessageIdExistence) {
         return res.status(400).json({
@@ -19,7 +19,7 @@ export default {
         });
       }
 
-      const chat = await Chats.findOne({
+      const chat = await Chat.findOne({
         _id: chatId,
       })
         .select("-messages")
@@ -35,7 +35,7 @@ export default {
         (participant) => String(participant) !== req.user.id
       );
 
-      const reciver = await Users.findById(reciverId).select("-contacts");
+      const reciver = await User.findById(reciverId).select("-contacts");
 
       if (!reciver) {
         return res.status(404).json({ code: "USER_NOT_FOUND" });
@@ -50,9 +50,9 @@ export default {
         type: "text",
       };
 
-      const createdMessage = await Messages.create(messageObj);
+      const createdMessage = await Message.create(messageObj);
 
-      await Chats.updateOne(
+      await Chat.updateOne(
         { _id: chat._id },
         {
           lastSentMessage: message,
@@ -91,7 +91,7 @@ export default {
       limit = parseInt(limit || 10);
       const { chatId } = req.params;
 
-      const chat = await Chats.findOne({
+      const chat = await Chat.findOne({
         _id: chatId,
       })
         .select("_id messages messagesCount")

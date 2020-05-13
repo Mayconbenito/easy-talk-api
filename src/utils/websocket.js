@@ -1,4 +1,4 @@
-import Users from "../app/models/users";
+import User from "../app/models/User";
 
 let io;
 function setupWS (server) {
@@ -7,7 +7,7 @@ function setupWS (server) {
     const { decoded } = socket.session;
 
     // When the socket connect set the socket status to active
-    await Users.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { _id: decoded.id },
       {
         ws: {
@@ -18,7 +18,7 @@ function setupWS (server) {
 
     socket.on("disconnect", async () => {
       // When the socket disconnect set the socket status to unactive
-      await Users.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { "ws.socket.id": socket.id },
         {
           ws: {
@@ -32,7 +32,7 @@ function setupWS (server) {
 
 async function sendMessage (reciverId, data) {
   try {
-    const reciver = await Users.findOne(reciverId).select("+ws");
+    const reciver = await User.findOne(reciverId).select("+ws");
 
     if (reciver.ws.socket.status === "active") {
       const socketId = reciver.ws.socket.id;
