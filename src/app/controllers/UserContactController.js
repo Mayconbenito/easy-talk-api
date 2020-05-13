@@ -1,7 +1,7 @@
 import User from "../models/User";
 
 export default {
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
@@ -33,12 +33,11 @@ export default {
         meta,
         contacts,
       });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { id } = req.params;
 
@@ -64,12 +63,11 @@ export default {
       if (addContact) {
         return res.status(204).send();
       }
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
-  delete: async (req, res) => {
+  delete: async (req, res, next) => {
     try {
       const { id } = req.params;
 
@@ -86,9 +84,8 @@ export default {
       if (removeContact) {
         return res.status(204).send();
       }
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };

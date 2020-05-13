@@ -1,7 +1,7 @@
 import User from "../models/User";
 
 export default {
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       let { searchText, limit } = req.query;
       limit = parseInt(limit || 10);
@@ -44,9 +44,8 @@ export default {
         meta,
         users,
       });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };

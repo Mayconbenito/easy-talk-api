@@ -6,7 +6,7 @@ import { sendMessage } from "../../utils/websocket";
 import mongoose from "mongoose";
 
 export default {
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { _id, message } = req.body;
       const { chatId } = req.params;
@@ -80,12 +80,11 @@ export default {
         },
         message: messageObj,
       });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
@@ -121,9 +120,8 @@ export default {
       };
 
       return res.json({ meta, messages: chat.messages });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };

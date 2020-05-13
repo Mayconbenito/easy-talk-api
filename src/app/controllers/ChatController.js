@@ -1,7 +1,7 @@
 import Chat from "../models/Chat";
 
 export default {
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { participants } = req.body;
 
@@ -36,12 +36,11 @@ export default {
       createChat.messages = undefined;
 
       return res.json({ chat: createChat });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       const allChats = await Chat.find({
         participants: req.user.id,
@@ -70,9 +69,8 @@ export default {
       };
 
       return res.json({ meta, chats });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };

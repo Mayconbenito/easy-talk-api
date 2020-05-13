@@ -4,7 +4,7 @@ import jwt from "../../utils/jwt";
 import User from "../models/User";
 
 export default {
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { email, password } = req.body;
 
@@ -33,9 +33,8 @@ export default {
       );
 
       res.json({ user, jwt: jwtToken, wsToken });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };
