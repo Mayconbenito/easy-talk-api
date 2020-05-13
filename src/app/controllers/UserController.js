@@ -4,7 +4,7 @@ import jwt from "../../utils/jwt";
 import User from "../models/User";
 
 export default {
-  show: async (req, res) => {
+  show: async (req, res, next) => {
     try {
       const { id } = req.params;
 
@@ -29,12 +29,11 @@ export default {
 
         return res.json({ user: { ...user, isContact } });
       }
-    } catch (e) {
-      console.log("Error", e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
 
@@ -58,9 +57,8 @@ export default {
       const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
 
       return res.json({ user, jwt: jwtToken });
-    } catch (e) {
-      console.log("Error", e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   },
 };

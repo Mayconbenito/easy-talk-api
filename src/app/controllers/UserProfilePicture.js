@@ -3,7 +3,7 @@ import cloudinary from "cloudinary";
 import { promisify } from "util";
 
 export default {
-  put: async (req, res) => {
+  put: async (req, res, next) => {
     try {
       if (
         !req.file ||
@@ -36,9 +36,8 @@ export default {
       user = await User.findById(req.user.id);
 
       return res.json({ user });
-    } catch (e) {
-      console.log("Error", e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (err) {
+      return next(err)
     }
   }
 };
