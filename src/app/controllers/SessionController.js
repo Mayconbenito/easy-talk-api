@@ -1,7 +1,7 @@
 import generateHash from "../../utils/crypto";
 import jwt from "../../utils/jwt";
 
-import Users from "../models/users";
+import User from "../models/User";
 
 export default {
   store: async (req, res) => {
@@ -10,9 +10,9 @@ export default {
 
       const passwordHash = await generateHash(process.env.APP_KEY, password);
 
-      const user = await Users.findOne({
+      const user = await User.findOne({
         email: email,
-        password: passwordHash
+        password: passwordHash,
       }).select("-contacts +email");
 
       if (!user) {
@@ -25,10 +25,10 @@ export default {
         process.env.JWT_HASH
       );
 
-      await Users.updateOne(
+      await User.updateOne(
         { _id: user._id },
         {
-          ws: { token: wsToken, createdAt: Date.now() }
+          ws: { token: wsToken, createdAt: Date.now() },
         }
       );
 
@@ -37,5 +37,5 @@ export default {
       console.log(e);
       res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
     }
-  }
+  },
 };
