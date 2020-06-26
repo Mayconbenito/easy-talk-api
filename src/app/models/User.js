@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
   contacts: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
   ],
-  ws: { type: wsSchema, select: false },
+  ws: { type: [wsSchema], select: false },
 });
 
 export default mongoose.model("User", schema, "users");
