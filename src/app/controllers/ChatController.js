@@ -37,7 +37,7 @@ export default {
 
       return res.json({ chat: createChat });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
   index: async (req, res, next) => {
@@ -70,7 +70,7 @@ export default {
 
       return res.json({ meta, chats });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

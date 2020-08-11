@@ -1,5 +1,5 @@
-import generateHash from "../../utils/crypto";
-import jwt from "../../utils/jwt";
+import generateHash from "../../helpers/crypto";
+import jwt from "../../helpers/jwt";
 
 import User from "../models/User";
 
@@ -34,7 +34,7 @@ export default {
 
       res.json({ user, jwt: jwtToken, wsToken });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

@@ -34,7 +34,7 @@ export default {
         contacts,
       });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
   store: async (req, res, next) => {
@@ -64,7 +64,7 @@ export default {
         return res.status(204).send();
       }
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
   delete: async (req, res, next) => {
@@ -85,7 +85,7 @@ export default {
         return res.status(204).send();
       }
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

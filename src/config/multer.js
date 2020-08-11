@@ -14,7 +14,7 @@ const storage = cloudinaryStorage({
       const fileName = hash.toString("hex");
       cb(null, fileName);
     });
-  }
+  },
 });
 
 const parser = multer({
@@ -27,7 +27,7 @@ const parser = multer({
     } else {
       cb(new Error("INVALID_FILE_FORMAT"));
     }
-  }
+  },
 });
 
 export default parser;

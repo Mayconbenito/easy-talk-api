@@ -2,7 +2,7 @@ import Chat from "../models/Chat";
 import User from "../models/User";
 import Message from "../models/Message";
 
-import { sendMessage } from "../../utils/websocket";
+import { sendMessage } from "../../websocket";
 import mongoose from "mongoose";
 
 export default {
@@ -81,7 +81,7 @@ export default {
         message: messageObj,
       });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
   index: async (req, res, next) => {
@@ -121,7 +121,7 @@ export default {
 
       return res.json({ meta, messages: chat.messages });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

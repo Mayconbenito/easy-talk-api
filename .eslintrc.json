@@ -1,6 +1,12 @@
 {
-  "extends": "standard",
+  "env": {
+    "es6": true,
+    "jest": true
+  },
+  "extends": ["standard", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
+    "prettier/prettier": "off",
     "no-var": "warn",
     "semi": "off",
     "quotes": ["warn", "double"],

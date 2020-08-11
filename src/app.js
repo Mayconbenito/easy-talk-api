@@ -4,13 +4,21 @@ import socketIo from "socket.io";
 import { errors } from "celebrate";
 import helmet from "helmet";
 import compression from "compression";
+import mongoose from "mongoose";
 import * as Sentry from "@sentry/node";
 
 import "dotenv/config";
 import ioMiddleware from "./app/middlewares/io";
 import errorHandler from "./app/middlewares/errorHandler";
 import routes from "./routes";
-import { setupWS } from "./utils/websocket";
+import { setupWS } from "./websocket";
+
+mongoose.connect(process.env.MONGODB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+});
 
 const app = express();
 
