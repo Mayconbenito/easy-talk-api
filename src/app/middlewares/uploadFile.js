@@ -4,7 +4,7 @@ import multerConfig from "../../config/multer";
 export default (req, res, next) => {
   const upload = multer(multerConfig).single("image");
 
-  upload(req, res, err => {
+  upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ code: "ERROR_WHEN_UPLOADING_FILE" });
     } else if (err) {

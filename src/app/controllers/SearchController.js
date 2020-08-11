@@ -45,7 +45,7 @@ export default {
         users,
       });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

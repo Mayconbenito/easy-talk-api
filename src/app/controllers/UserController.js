@@ -1,5 +1,5 @@
-import generateHash from "../../utils/crypto";
-import jwt from "../../utils/jwt";
+import generateHash from "../../helpers/crypto";
+import jwt from "../../helpers/jwt";
 
 import User from "../models/User";
 
@@ -23,14 +23,14 @@ export default {
         const isContact =
           loggedUser.contacts.length > 0
             ? !!loggedUser.contacts.find(
-              (contact) => String(contact._id) === id
-            )
+                (contact) => String(contact._id) === id
+              )
             : false;
 
         return res.json({ user: { ...user, isContact } });
       }
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
   store: async (req, res, next) => {
@@ -58,7 +58,7 @@ export default {
 
       return res.json({ user, jwt: jwtToken });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   },
 };

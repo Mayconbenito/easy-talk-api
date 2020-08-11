@@ -1,4 +1,4 @@
-import mongoose from "../../config/mongodb";
+import mongoose from "mongoose";
 
 const wsSchema = new mongoose.Schema({
   type: Object,

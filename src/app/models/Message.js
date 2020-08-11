@@ -1,4 +1,4 @@
-import mongoose from "../../config/mongodb";
+import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
   _id: { type: mongoose.Schema.ObjectId },

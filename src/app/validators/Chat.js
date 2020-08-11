@@ -9,7 +9,7 @@ export default {
         .min(1)
         .max(1)
         .items(Joi.objectId().required())
-        .required()
-    })
-  }
+        .required(),
+    }),
+  },
 };

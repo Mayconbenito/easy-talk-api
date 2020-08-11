@@ -6,7 +6,7 @@ const validationSchema = {
     check(
       "password",
       "password must contain between 6 and 60 characters"
-    ).isLength({ min: 6, max: 60 })
+    ).isLength({ min: 6, max: 60 }),
   ],
   register: [
     check(
@@ -19,19 +19,19 @@ const validationSchema = {
       "password must contain between 6 and 60 characters"
     ).isLength({
       min: 6,
-      max: 60
-    })
+      max: 60,
+    }),
   ],
   messages: {
-    post: [check("toId").isString(), check("message").isString()]
+    post: [check("toId").isString(), check("message").isString()],
   },
   peoples: {
-    get: [check("page").isInt(), check("searchText").isString()]
+    get: [check("page").isInt(), check("searchText").isString()],
   },
   contacts: {
     get: [check("page").isInt()],
-    post: [check("id").isString()]
-  }
+    post: [check("id").isString()],
+  },
 };
 
 export default { validationSchema, validationResult };

@@ -37,7 +37,7 @@ export default {
 
       return res.json({ user });
     } catch (err) {
-      return next(err)
+      return next(err);
     }
-  }
+  },
 };

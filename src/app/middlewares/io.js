@@ -1,5 +1,5 @@
 import "dotenv/config";
-import jwt from "../../utils/jwt";
+import jwt from "../../helpers/jwt";
 
 export default async (socket, next) => {
   const token = socket.handshake.query.token;
