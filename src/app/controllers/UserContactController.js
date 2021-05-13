@@ -1,4 +1,6 @@
-import User from "../models/User";
+import { AddUserContactUseCase } from "../useCases/AddUserContactUseCase/AddUserContactUseCase";
+import { RemoveUserContactUseCase } from "../useCases/RemoveUserContactUseCase/RemoveUserContactUseCase";
+import { ShowUserContactsUseCase } from "../useCases/ShowUserContactsUseCase/ShowUserContactsUseCase";
 
 export default {
   index: async (req, res, next) => {
@@ -6,33 +8,11 @@ export default {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
 
-      const user = await User.findById(req.user.id)
-        .populate("contacts")
-        .select("-_id +contacts")
-        .skip(limit * (page - 1))
-        .limit(limit);
+      const showUserContactsUseCase = new ShowUserContactsUseCase()
 
-      const contacts =
-        user && user.contacts && user.contacts.length > 0 ? user.contacts : [];
+      const response = await showUserContactsUseCase.execute({ page, limit })
 
-      contacts.map((contact) => {
-        contact.contacts = undefined;
-        contact.session = undefined;
-        return contact;
-      });
-
-      const total = await User.countDocuments({ _id: req.user.id });
-
-      const meta = {
-        total: total,
-        items: contacts.length,
-        pages: Math.ceil(total / limit),
-      };
-
-      return res.json({
-        meta,
-        contacts,
-      });
+      return res.status(response.status).json(response)
     } catch (err) {
       return next(err);
     }
@@ -41,28 +21,11 @@ export default {
     try {
       const { id } = req.params;
 
-      const verifyFriend = await User.findById(id);
-      if (!verifyFriend) {
-        return res.status(404).json({ code: "USER_NOT_FOUND" });
-      }
+      const addUserContactUseCase = new AddUserContactUseCase()
 
-      const verifyContact = await User.findOne({
-        _id: req.user.id,
-        contacts: id,
-      });
+      const response = await addUserContactUseCase.execute({ userId: req.user.id, id })
 
-      if (verifyContact) {
-        return res.status(400).json({ code: "CONTACT_ALREADY_ADDED" });
-      }
-
-      const addContact = await User.findOneAndUpdate(
-        { _id: req.user.id },
-        { $push: { contacts: id } }
-      );
-
-      if (addContact) {
-        return res.status(204).send();
-      }
+      return res.status(response.status).json(response)
     } catch (err) {
       return next(err);
     }
@@ -71,19 +34,11 @@ export default {
     try {
       const { id } = req.params;
 
-      const contact = await User.findById(id);
-      if (!contact) {
-        return res.status(404).json({ code: "USER_NOT_FOUND" });
-      }
+      const removeUserContactUseCase = new RemoveUserContactUseCase()
 
-      const removeContact = await User.findOneAndUpdate(
-        { _id: req.user.id },
-        { $pull: { contacts: id } }
-      );
+      const response = await removeUserContactUseCase.execute({ userId: req.user.id, id })
 
-      if (removeContact) {
-        return res.status(204).send();
-      }
+      return res.status(response.status).json(response)
     } catch (err) {
       return next(err);
     }
