@@ -1,34 +1,16 @@
-import generateHash from "../../helpers/crypto";
-import jwt from "../../helpers/jwt";
-
-import User from "../models/User";
+import { RegisterUserUseCase } from "../useCases/RegisterUserUseCase/RegisterUserUseCase";
+import { ShowUserProfileUseCase } from "../useCases/ShowUserProfileUseCase/ShowUserProfileUseCase";
 
 export default {
   show: async (req, res, next) => {
     try {
       const { id } = req.params;
 
-      const loggedUser = await User.findOne({ _id: req.user.id });
+      const showUserProfileUseCase = new ShowUserProfileUseCase()
 
-      if (req.path.split("/")[1] === "me") {
-        loggedUser.contacts = undefined;
-        return res.json({ user: loggedUser });
-      } else {
-        const user = await User.findOne({ _id: id }).select("-contacts").lean();
+      const response = await showUserProfileUseCase.execute({ userId: req.user.id, id, isMe: req.path.split("/")[1] === "me" })
 
-        if (!user) {
-          return res.status(404).json({ code: "USER_NOT_FOUND" });
-        }
-
-        const isContact =
-          loggedUser.contacts.length > 0
-            ? !!loggedUser.contacts.find(
-                (contact) => String(contact._id) === id
-              )
-            : false;
-
-        return res.json({ user: { ...user, isContact } });
-      }
+      return res.status(response.status).json(response)
     } catch (err) {
       return next(err);
     }
@@ -37,26 +19,11 @@ export default {
     try {
       const { username, email, password } = req.body;
 
-      const findUser = await User.findOne({ email });
+      const registerUserUseCase = new RegisterUserUseCase()
 
-      if (findUser) {
-        return res.status(400).json({ code: "EMAIL_ALREADY_USED" });
-      }
+      const response = await registerUserUseCase.execute({ username, email, password })
 
-      const passwordHash = await generateHash(process.env.APP_KEY, password);
-
-      const user = await User.create({
-        name: username,
-        email: email,
-        password: passwordHash,
-      });
-
-      user.contacts = undefined;
-      user.password = undefined;
-
-      const jwtToken = await jwt.sign({ id: user._id }, process.env.JWT_HASH);
-
-      return res.json({ user, jwt: jwtToken });
+      return res.status(response.status).json(response)
     } catch (err) {
       return next(err);
     }

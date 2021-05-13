@@ -5,7 +5,7 @@ import SessionController from "./app/controllers/SessionController";
 import ChatController from "./app/controllers/ChatController";
 import ChatMessageController from "./app/controllers/ChatMessageController";
 import UserContactController from "./app/controllers/UserContactController";
-import SearchController from "./app/controllers/SearchController";
+import SearchUsersController from "./app/controllers/SearchUsersController";
 import UserController from "./app/controllers/UserController";
 import UserProfilePicture from "./app/controllers/UserProfilePicture";
 
@@ -17,7 +17,7 @@ import SessionValidator from "./app/validators/Session";
 import UserContactValidator from "./app/validators/UserContact";
 import ChatValidator from "./app/validators/Chat";
 import ChatMessageValidator from "./app/validators/ChatMessage";
-import SearchValidator from "./app/validators/Search";
+import SearchUsersValidator from "./app/validators/SearchUsers";
 
 const routes = express.Router();
 
@@ -74,8 +74,8 @@ routes.delete(
 routes.get(
   "/search/users",
   auth,
-  celebrate(SearchValidator.index),
-  SearchController.index
+  celebrate(SearchUsersValidator.index),
+  SearchUsersController.index
 );
 
 routes.get(

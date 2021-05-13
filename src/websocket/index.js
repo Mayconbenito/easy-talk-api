@@ -31,6 +31,12 @@ function setupWS(server) {
         }
       );
     });
+
+    socket.on("user_heartbeat", async () => {}) // UseCase Handler
+
+    socket.on("message_receipt_confirmation", async () => {}) // UseCase Handler
+
+    socket.on("message_read_confirmation", async () => {}) // UseCase Handler
   });
 }
 
