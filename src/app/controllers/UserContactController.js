@@ -1,94 +1,46 @@
-import Users from "../models/users";
+import { AddUserContactUseCase } from "../useCases/AddUserContactUseCase/AddUserContactUseCase";
+import { RemoveUserContactUseCase } from "../useCases/RemoveUserContactUseCase/RemoveUserContactUseCase";
+import { ShowUserContactsUseCase } from "../useCases/ShowUserContactsUseCase/ShowUserContactsUseCase";
 
 export default {
-  index: async (req, res) => {
+  index: async (req, res, next) => {
     try {
       let { page, limit } = req.query;
       limit = parseInt(limit || 10);
 
-      const user = await Users.findById(req.user.id)
-        .populate("contacts")
-        .select("-_id +contacts")
-        .skip(limit * (page - 1))
-        .limit(limit);
+      const showUserContactsUseCase = new ShowUserContactsUseCase()
 
-      const contacts =
-        user && user.contacts && user.contacts.length > 0 ? user.contacts : [];
+      const response = await showUserContactsUseCase.execute({ page, limit })
 
-      contacts.map(contact => {
-        contact.contacts = undefined;
-        contact.session = undefined;
-        return contact;
-      });
-
-      const total = await Users.countDocuments({ _id: req.user.id });
-
-      const meta = {
-        total: total,
-        items: contacts.length,
-        pages: Math.ceil(total / limit)
-      };
-
-      return res.json({
-        meta,
-        contacts
-      });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+      return res.status(response.status).json(response)
+    } catch (err) {
+      return next(err);
     }
   },
-  store: async (req, res) => {
+  store: async (req, res, next) => {
     try {
       const { id } = req.params;
 
-      const verifyFriend = await Users.findById(id);
-      if (!verifyFriend) {
-        return res.status(404).json({ code: "USER_NOT_FOUND" });
-      }
+      const addUserContactUseCase = new AddUserContactUseCase()
 
-      const verifyContact = await Users.findOne({
-        _id: req.user.id,
-        contacts: id
-      });
+      const response = await addUserContactUseCase.execute({ userId: req.user.id, id })
 
-      if (verifyContact) {
-        return res.status(400).json({ code: "CONTACT_ALREADY_ADDED" });
-      }
-
-      const addContact = await Users.findOneAndUpdate(
-        { _id: req.user.id },
-        { $push: { contacts: id } }
-      );
-
-      if (addContact) {
-        return res.status(204).send();
-      }
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+      return res.status(response.status).json(response)
+    } catch (err) {
+      return next(err);
     }
   },
-  delete: async (req, res) => {
+  delete: async (req, res, next) => {
     try {
       const { id } = req.params;
 
-      const contact = await Users.findById(id);
-      if (!contact) {
-        return res.status(404).json({ code: "USER_NOT_FOUND" });
-      }
+      const removeUserContactUseCase = new RemoveUserContactUseCase()
 
-      const removeContact = await Users.findOneAndUpdate(
-        { _id: req.user.id },
-        { $pull: { contacts: id } }
-      );
+      const response = await removeUserContactUseCase.execute({ userId: req.user.id, id })
 
-      if (removeContact) {
-        return res.status(204).send();
-      }
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ code: "INTERNAL_SERVER_ERROR" });
+      return res.status(response.status).json(response)
+    } catch (err) {
+      return next(err);
     }
-  }
+  },
 };

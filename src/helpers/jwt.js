@@ -24,5 +24,5 @@ const verify = (token, cert) =>
 
 export default {
   sign,
-  verify
+  verify,
 };

@@ -1,4 +1,4 @@
-import mongoose from "../../config/mongodb";
+import mongoose from "mongoose";
 
 const wsSchema = new mongoose.Schema({
   type: Object,
@@ -6,9 +6,9 @@ const wsSchema = new mongoose.Schema({
   socket: {
     id: String,
     createdAt: { type: Date, default: Date.now },
-    status: { type: String, default: "inactive" }
+    status: { type: String, default: "inactive" },
   },
-  createdAt: Date
+  createdAt: Date,
 });
 
 const schema = new mongoose.Schema({
@@ -17,13 +17,13 @@ const schema = new mongoose.Schema({
   password: { type: String, required: true, select: false },
   picture: {
     type: Object,
-    default: null
+    default: null,
   },
   createdAt: { type: Date, default: Date.now },
   contacts: [
-    { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Users" }
+    { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
   ],
-  ws: { type: wsSchema, select: false }
+  ws: { type: [wsSchema], select: false },
 });
 
-export default mongoose.model("Users", schema);
+export default mongoose.model("User", schema, "users");

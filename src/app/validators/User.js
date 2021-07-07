@@ -6,16 +6,14 @@ Joi.objectId = joiObjectId(Joi);
 export default {
   show: {
     params: {
-      id: Joi.objectId().required()
-    }
+      id: Joi.objectId().required(),
+    },
   },
   store: {
     body: Joi.object().keys({
       username: Joi.string().required(),
-      email: Joi.string()
-        .email()
-        .required(),
-      password: Joi.string().required()
-    })
-  }
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    }),
+  },
 };
