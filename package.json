@@ -29,7 +29,7 @@
     "cloudinary": "1.21.0",
     "compression": "^1.7.4",
     "dotenv": "^6.2.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "helmet": "^3.23.2",
     "joi-objectid": "^3.0.1",
     "jsonwebtoken": "8.5.1",
